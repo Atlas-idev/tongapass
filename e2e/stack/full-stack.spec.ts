@@ -49,10 +49,21 @@ test('recette : arrivée sur la pile réelle (Keycloak, n8n, Gitea, Mattermost, 
   await page.getByRole('button', { name: 'Continuer' }).click();
   await expect(page.getByRole('heading', { name: 'Accès accordés' })).toBeVisible();
   await page.screenshot({ path: `${SHOTS}/onboarding-review.png`, fullPage: true });
+  const observer = await page.context().newPage();
+  await observer.goto('/');
+  await expect(observer.getByText('Synchronisé', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: 'Créer les comptes' }).click();
 
   await expect(page).toHaveURL(/\/executions\//);
   await expect(page.getByText('Terminée', { exact: true }).first()).toBeVisible({ timeout: 90_000 });
+  await observer.getByRole('button', { name: /Activité en direct/ }).click();
+  const activity = observer.getByRole('dialog', { name: 'Activité en direct' });
+  const runPath = new URL(page.url()).pathname;
+  await expect(activity.getByRole('link', { name: /Exécution en cours/ }).and(activity.locator(`a[href="${runPath}"]`))).toHaveCount(1);
+  await expect(activity.getByRole('link', { name: /Étape Keycloak/ }).first()).toHaveAttribute('href', runPath);
+  await expect(activity.getByRole('link', { name: /Exécution terminée/i }).first()).toHaveAttribute('href', runPath);
+  await observer.screenshot({ path: `${SHOTS}/activite-en-direct.png` });
+  await observer.close();
   await page.waitForTimeout(600);
   await page.screenshot({ path: `${SHOTS}/onboarding-run.png`, fullPage: true });
 

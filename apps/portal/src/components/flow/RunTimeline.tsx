@@ -29,14 +29,14 @@ export function RunTimeline({ steps }: { steps: WorkflowStep[] }) {
         const finished = step.status !== 'PENDING' && step.status !== 'RUNNING';
         const duration = durationBetween(step.startedAt, step.finishedAt);
         return (
-          <li key={step.key} className="relative grid grid-cols-[1.75rem_minmax(0,1fr)] gap-x-3.5 pb-5 last:pb-0">
+          <li key={step.key} data-step-state={step.status} className="relative grid grid-cols-[1.75rem_minmax(0,1fr)] gap-x-3.5 pb-5 last:pb-0">
             {!last ? (
               <span
                 className={cn('absolute left-3.5 top-8 bottom-0.5 w-px -translate-x-1/2', finished && step.status !== 'SKIPPED' ? 'bg-brand' : 'bg-line-strong')}
                 aria-hidden="true"
               />
             ) : null}
-            <span className={cn('relative z-[1] mt-0.5 flex size-7 items-center justify-center rounded-full', NODE[step.status])}>
+            <span className={cn('timeline-marker relative z-[1] mt-0.5 flex size-7 items-center justify-center rounded-full', NODE[step.status])}>
               <NodeIcon step={step} />
             </span>
             <div className="min-w-0">

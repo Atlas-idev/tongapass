@@ -24,13 +24,14 @@ const menuItem =
 export function Topbar({ onOpenMenu, onOpenSearch }: { onOpenMenu: () => void; onOpenSearch: () => void }) {
   const me = useMe();
   const { logout } = useAuth();
-  const { connected } = useLive();
+  const { connected, events } = useLive();
+  const signal = events[0]?.seq;
   const { resolved, toggle } = useTheme();
   const [first = '', last = ''] = (me.name ?? me.username).split(' ');
   const isMac = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform);
 
   return (
-    <header className="sticky top-0 z-30 border-b border-line bg-canvas">
+    <header className="workspace-topbar sticky top-0 z-30 border-b border-line bg-surface">
       <div className="flex h-16 items-center gap-2 px-3 sm:gap-3 sm:px-6 lg:px-8">
         <IconButton label="Ouvrir le menu" className="lg:hidden" onClick={onOpenMenu}>
           <IconMenu className="size-5" />
@@ -54,13 +55,16 @@ export function Topbar({ onOpenMenu, onOpenSearch }: { onOpenMenu: () => void; o
           <span
             role="status"
             className={cn(
-              'mr-2 hidden items-center gap-1.5 text-xs md:inline-flex',
+              'live-indicator mr-1 hidden items-center gap-1.5 text-xs md:inline-flex',
               connected ? 'text-success' : 'text-ink-3',
             )}
             title={connected ? 'Les mises à jour arrivent en temps réel' : 'Reconnexion au flux temps réel…'}
           >
-            <span className="size-1.5 rounded-full bg-current" aria-hidden="true" />
-            <span className="text-ink-3">{connected ? 'Synchronisé' : 'Reconnexion…'}</span>
+            <svg viewBox="0 0 42 18" className="h-4 w-9" aria-hidden="true" data-signal={signal ?? 0}>
+              <path d="M1 10H41" fill="none" stroke="currentColor" opacity=".45" />
+              {signal && connected ? <path key={signal} className="signal-stroke" d="M1 10h10l3-3 4 8 5-13 4 10 3-2h11" pathLength="1" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinejoin="round" /> : null}
+            </svg>
+            <span>{connected ? 'Synchronisé' : 'Reconnexion…'}</span>
           </span>
 
           <LiveActivity />

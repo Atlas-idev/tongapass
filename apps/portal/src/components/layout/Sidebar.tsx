@@ -27,7 +27,7 @@ export function Sidebar({
   const [first = '', last = ''] = (me.name ?? me.username).split(' ');
 
   return (
-    <nav aria-label="Navigation principale" className="flex h-full flex-col">
+    <nav aria-label="Navigation principale" className="workspace-sidebar flex h-full flex-col">
       <div className={cn('flex h-16 items-center gap-2 px-4', collapsed && 'justify-center px-0')}>
         <NavLink to="/" onClick={onNavigate} aria-label="TongaPass, vue d’ensemble" className="rounded-lg">
           {collapsed ? <LogoMark className="size-9" /> : <Logo subtitle={me.workspace.company === 'TongaPass' ? 'Espace RH' : me.workspace.company} />}

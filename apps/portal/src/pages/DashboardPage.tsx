@@ -1,12 +1,13 @@
-import { IconAlert, IconArrival, IconBars, IconCalendar, IconChevronRight, IconClock, IconEnter, IconExit, IconFlow, IconShieldCheck, IconSwap } from '@/components/icons';
-import type { ReactNode } from 'react';
+import { IconAlert, IconArrival, IconBars, IconCalendar, IconChevronRight, IconClock, IconEnter, IconExit, IconFlow, IconPeople, IconPulse, IconShieldCheck, IconSwap, type IconComponent } from '@/components/icons';
 import { Link } from 'react-router';
 import { useMe } from '@/auth/AuthProvider';
 import { MovementsChart } from '@/components/charts/MovementsChart';
 import { StepSegments } from '@/components/flow/RunTimeline';
 import { Badge, EmployeeStatusBadge, RunStatusBadge } from '@/components/ui/Badge';
 import { ButtonLink } from '@/components/ui/Button';
-import { EmptyState, ErrorState, PageHeader, Panel, Skeleton } from '@/components/ui/Feedback';
+import { EmptyState, ErrorState, Panel, Skeleton } from '@/components/ui/Feedback';
+import { useLive } from '@/hooks/useLiveEvents';
+import { describeLiveEvent } from '@/lib/live-event';
 import { useDashboard } from '@/hooks/queries';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { useOriginState } from '@/hooks/useOrigin';
@@ -33,16 +34,17 @@ function dayLabel(date: Date): string {
 }
 
 /** Indicateur clé : libellé, valeur et précision ; toute la case mène à la liste correspondante. */
-function Kpi({ label, value, hint, to }: { label: string; value: ReactNode; hint: string; to?: string }) {
+function Kpi({ label, value, hint, to, icon: Icon }: { label: string; value: string | number; hint: string; to?: string; icon: IconComponent }) {
   const body = (
     <>
-      <p className="text-[13px] text-ink-3">{label}</p>
-      <p className="mt-1 text-2xl font-semibold tabular text-ink">{value}</p>
+      <Icon className="metric-icon" aria-hidden="true" />
+      <p className="mt-2 text-[13px] font-medium text-ink-2 xl:min-h-10 2xl:min-h-0">{label}</p>
+      <p key={value} className="metric-value tabular text-ink">{value}</p>
       <p className="mt-0.5 text-xs text-ink-3">{hint}</p>
     </>
   );
   return (
-    <li className="min-w-0 bg-surface">
+    <li className="metric-cell min-w-0">
       {to ? (
         <Link to={to} className="block h-full px-4 py-3.5 transition-colors hover:bg-hover">
           {body}
@@ -57,20 +59,21 @@ function Kpi({ label, value, hint, to }: { label: string; value: ReactNode; hint
 function Kpis({ kpis }: { kpis: DashboardSummary['kpis'] }) {
   return (
     <ul
-      className="grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-panel)] border border-line bg-line sm:grid-cols-3 xl:grid-cols-6"
+      className="metrics-grid grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-6"
       aria-label="Indicateurs clés"
     >
-      <Kpi label="Employés actifs" value={kpis.activeEmployees} hint="Départs planifiés inclus" to="/employes?statut=active" />
+      <Kpi icon={IconPeople} label="Employés actifs" value={kpis.activeEmployees} hint="Départs planifiés inclus" to="/employes?statut=active" />
       <Kpi
+        icon={IconFlow}
         label="Exécutions en cours"
         value={kpis.runsInProgress}
         hint={kpis.runsInProgress ? 'Suivies en direct' : 'Aucun workflow actif'}
         to="/executions?status=QUEUED,RUNNING"
       />
-      <Kpi label="Arrivées planifiées" value={kpis.scheduledArrivals} hint="Création programmée" to="/executions?type=ONBOARDING&status=SCHEDULED" />
-      <Kpi label="Départs planifiés" value={kpis.scheduledDepartures} hint="Révocation programmée" to="/executions?type=OFFBOARDING&status=SCHEDULED" />
-      <Kpi label="Départs traités" value={kpis.revokedThisMonth} hint="Ce mois-ci" />
-      <Kpi label="Délai de création" value={formatDuration(kpis.avgProvisioningSeconds)} hint="De la demande aux accès" />
+      <Kpi icon={IconArrival} label="Arrivées planifiées" value={kpis.scheduledArrivals} hint="Création programmée" to="/executions?type=ONBOARDING&status=SCHEDULED" />
+      <Kpi icon={IconCalendar} label="Départs planifiés" value={kpis.scheduledDepartures} hint="Révocation programmée" to="/executions?type=OFFBOARDING&status=SCHEDULED" />
+      <Kpi icon={IconExit} label="Départs traités" value={kpis.revokedThisMonth} hint="Ce mois-ci" />
+      <Kpi icon={IconClock} label="Délai de création" value={formatDuration(kpis.avgProvisioningSeconds)} hint="De la demande aux accès" />
     </ul>
   );
 }
@@ -148,6 +151,22 @@ function Agenda({ items }: { items: AgendaItem[] }) {
   );
 }
 
+function DashboardSignal() {
+  const { events, connected } = useLive();
+  const latest = events[0];
+  const item = latest && describeLiveEvent(latest);
+  return (
+    <div className="dashboard-signal">
+      <IconPulse aria-hidden="true" />
+      <span>{connected ? 'Activité en direct' : 'Reconnexion…'}</span>
+      {latest && item ? <span className="dashboard-event" key={latest.seq}>
+        <time dateTime={latest.at}>{formatTime(latest.at)}</time>
+        {item.to ? <Link to={item.to}>{item.title}</Link> : item.title}
+      </span> : <span className="dashboard-event">{connected ? 'En attente du prochain mouvement' : 'Connexion au flux d’activité'}</span>}
+    </div>
+  );
+}
+
 export function DashboardPage() {
   const me = useMe();
   const { data, isPending, error, refetch } = useDashboard();
@@ -156,17 +175,13 @@ export function DashboardPage() {
 
   return (
     <div className="space-y-5">
-      <PageHeader
-        title="Vue d’ensemble"
-        description={`${capitalize(formatDateLong(new Date()))} · mouvements de personnel et état des accès`}
-        actions={
-          me.permissions.manageEmployees ? (
-            <ButtonLink to="/arrivees/nouvelle" variant="primary" icon={<IconArrival className="size-4" aria-hidden="true" />}>
-              Déclarer une arrivée
-            </ButtonLink>
-          ) : null
-        }
-      />
+      <header className="dashboard-intro">
+        <div className="dashboard-heading">
+          <div><p>{capitalize(formatDateLong(new Date()))}</p><h1>Vue d’ensemble</h1></div>
+          {me.permissions.manageEmployees && <ButtonLink to="/arrivees/nouvelle" variant="primary" icon={<IconArrival className="size-4" aria-hidden="true" />}>Déclarer une arrivée</ButtonLink>}
+        </div>
+        <DashboardSignal />
+      </header>
 
       {error ? <ErrorState error={error} onRetry={() => void refetch()} /> : null}
 

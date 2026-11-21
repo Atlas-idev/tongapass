@@ -142,3 +142,11 @@ Pendant le diagnostic, axe signale un défaut de contraste sur des lignes de l'a
 | Téléphone de 375 px, animations réduites | Fiche d’exemple navigable au clavier, retour Keycloak vers l’assistant, validation des dates et filtres du tableau de bord vérifiés |
 
 La recette de cycle de vie utilise un employé fictif. Son départ termine le parcours et son historique reste consultable dans la base de démonstration.
+
+## 7. Portail lagon et suivi en direct, 21 novembre 2026
+
+Dans Edge, un gestionnaire RH déclare une arrivée pendant qu’un second onglet affiche le tableau de bord. Le second onglet reçoit l’étape Keycloak et la fin de l’exécution sans rechargement. Les deux entrées du fil ouvrent la même exécution. Le test vérifie aussi qu’elle apparaît une seule fois comme « en cours » pendant les rappels successifs de n8n. [Capture du fil d’activité](screenshots/activite-en-direct.png)
+
+La démonstration publique joue les trois étapes à l’écran et peut être relancée. À 375 px, les flèches du clavier sélectionnent les trois mouvements. Avec la réduction des animations activée, chaque scénario présente directement son résultat. [Accueil sur ordinateur](screenshots/accueil.png) · [Accueil sur téléphone](screenshots/accueil-mobile.png)
+
+Après correction du contraste des initiales du profil, axe-core ne détecte aucune violation grave ou critique sur l’accueil et sur les huit écrans authentifiés testés en clair et en sombre.

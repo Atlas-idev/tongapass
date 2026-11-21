@@ -1,6 +1,6 @@
 /*
- * Charte TongaPass « café crème » appliquée à la connexion Keycloak.
- * Fond ivoire uni, carte pleine à bordure fine, bouton cacao. Aucun dégradé ni flou.
+ * Charte TongaPass « lagon » appliquée à la connexion Keycloak.
+ * Surfaces claires, texte bleu nuit et bouton lagon. Aucun dégradé ni flou.
  * Police Plus Jakarta Sans embarquée (licence SIL OFL 1.1, voir fonts/OFL.txt) :
  * aucune requête vers un CDN, compatible avec une CSP stricte.
  */
@@ -24,18 +24,18 @@
 }
 
 :root {
-  --tp-canvas: #f9f2e4;
-  --tp-surface: #fffdf9;
-  --tp-ink: #4a3a34;
-  --tp-ink-2: #5e4a41;
-  --tp-ink-3: #77574a;
-  --tp-line: #ebdcc8;
-  --tp-line-strong: #d0ae92;
-  --tp-brand: #77574a;
-  --tp-brand-strong: #4a3a34;
+  --tp-canvas: #f3f7f6;
+  --tp-surface: #ffffff;
+  --tp-ink: #112e32;
+  --tp-ink-2: #3d575c;
+  --tp-ink-3: #126756;
+  --tp-line: #d8e4e0;
+  --tp-line-strong: #9bb6af;
+  --tp-brand: #126756;
+  --tp-brand-strong: #112e32;
   --tp-info: #3d5c78;
   --tp-danger: #a23a2a;
-  --tp-focus-ring: rgb(119 87 74 / 0.2);
+  --tp-focus-ring: rgb(18 103 86 / 0.2);
 
   --pf-v5-global--FontFamily--text: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
   --pf-v5-global--FontFamily--heading: var(--pf-v5-global--FontFamily--text);
@@ -104,7 +104,7 @@ body {
   background: var(--tp-surface) !important;
   border: 1px solid var(--tp-line) !important;
   border-radius: 12px !important;
-  box-shadow: 0 1px 2px rgb(74 58 52 / 0.06) !important;
+  box-shadow: 0 1px 2px rgb(15 46 44 / 0.06) !important;
   overflow: hidden;
 }
 .pf-v5-c-login__main::before,
@@ -204,7 +204,7 @@ body {
   --pf-v5-c-button--m-primary--focus--BackgroundColor: var(--tp-brand-strong);
   --pf-v5-c-button--m-primary--active--BackgroundColor: var(--tp-brand-strong);
   background: var(--tp-brand) !important;
-  color: #fffdf9 !important;
+  color: #ffffff !important;
   font-weight: 600;
   border-radius: 8px !important;
   box-shadow: none;

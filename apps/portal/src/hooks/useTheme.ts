@@ -18,7 +18,7 @@ function resolve(preference: ThemePreference): 'light' | 'dark' {
 export function applyTheme(preference: ThemePreference = readPreference()): void {
   const theme = resolve(preference);
   document.documentElement.dataset.theme = theme;
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#1c1613' : '#f9f2e4');
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', theme === 'dark' ? '#0b191e' : '#f3f7f6');
 }
 
 function setPreference(next: ThemePreference): void {

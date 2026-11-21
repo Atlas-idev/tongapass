@@ -33,43 +33,70 @@ export function useLiveEventsConnection(enabled: boolean): LiveState {
   const [connected, setConnected] = useState(false);
   const [events, setEvents] = useState<LiveEntry[]>([]);
   const [unread, setUnread] = useState(0);
-  const pending = useRef(new Set<string>());
-  const timer = useRef<number | null>(null);
   const seq = useRef(0);
 
   useEffect(() => {
     if (!enabled) return;
     const controller = new AbortController();
+    const pending = new Set<string>();
+    const activeRuns = new Set<string>();
+    let timer: number | null = null;
+    let hasConnected = false;
 
     const flush = () => {
-      timer.current = null;
-      for (const key of pending.current) void client.invalidateQueries({ queryKey: JSON.parse(key) as unknown[] });
-      pending.current.clear();
+      timer = null;
+      for (const key of pending) void client.invalidateQueries({ queryKey: JSON.parse(key) as unknown[] });
+      pending.clear();
     };
     const schedule = (queryKey: readonly unknown[]) => {
-      pending.current.add(JSON.stringify(queryKey));
-      timer.current ??= window.setTimeout(flush, 250);
+      pending.add(JSON.stringify(queryKey));
+      timer ??= window.setTimeout(flush, 250);
     };
 
     void connectLiveEvents({
       signal: controller.signal,
-      onStatus: setConnected,
+      onStatus: (online) => {
+        if (controller.signal.aborted) return;
+        setConnected(online);
+        if (!online) activeRuns.clear();
+        if (online && hasConnected) {
+          for (const key of ['dashboard', 'runs', 'run', 'employees', 'employee', 'compliance', 'employee-compliance', 'employee-history', 'audit']) schedule([key]);
+        }
+        if (online) hasConnected = true;
+      },
       onEvent: (event) => {
-        seq.current += 1;
-        const entry: LiveEntry = { ...event, seq: seq.current };
-        setEvents((previous) => [entry, ...previous].slice(0, BUFFER));
-        setUnread((count) => Math.min(count + 1, 99));
+        if (controller.signal.aborted) return;
         const { runId, employeeId } = event.data as { runId?: string; employeeId?: string };
         if (runId) schedule(keys.run(runId));
         if (employeeId) schedule(keys.employee(employeeId));
         schedule(['runs']);
         schedule(keys.dashboard);
-        if (event.type === 'employee.updated') schedule(['employees']);
+        if (event.type === 'employee.updated') {
+          schedule(['employees']);
+          if (event.data.scope === 'compliance') {
+            schedule(keys.compliance);
+            schedule(['employee-compliance']);
+          }
+        }
+
+        // Chaque rappel n8n peut confirmer à nouveau que la même exécution est en cours.
+        if (event.type === 'run.updated' && runId) {
+          if (event.data.status === 'RUNNING') {
+            if (activeRuns.has(runId)) return;
+            activeRuns.add(runId);
+          } else {
+            activeRuns.delete(runId);
+          }
+        }
+        seq.current += 1;
+        const entry: LiveEntry = { ...event, seq: seq.current };
+        setEvents((previous) => [entry, ...previous].slice(0, BUFFER));
+        setUnread((count) => Math.min(count + 1, 99));
       },
     });
     return () => {
       controller.abort();
-      if (timer.current) window.clearTimeout(timer.current);
+      if (timer !== null) window.clearTimeout(timer);
     };
   }, [client, enabled]);
 

@@ -2,6 +2,10 @@
 
 ## En cours
 
+- Accueil bleu nuit et lagon, démonstration animée des trois parcours RH et schéma d’architecture rejouable. Le tableau de bord et la barre supérieure réagissent aux événements du serveur.
+
+### Refonte précédente
+
 - Nouvelle charte café crème pour le portail, la connexion Keycloak et les e-mails. L’accueil présente une fiche d’accès interactive pour les trois mouvements RH.
 - Titres en Instrument Serif, filtres utilisables au clavier et transitions courtes avec prise en compte des préférences de mouvement.
 - Correction de la pagination des exécutions et des liens du tableau de bord. L’assistant vérifie les dates personnalisées avant de planifier l’arrivée.

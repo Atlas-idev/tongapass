@@ -1,66 +1,23 @@
 import { Popover } from 'radix-ui';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router';
-import { IconFlow, IconPerson, IconPulse, IconShieldCheck, type IconComponent } from '@/components/icons';
-import { useLive, type LiveEntry } from '@/hooks/useLiveEvents';
+import { IconPulse } from '@/components/icons';
+import { useLive } from '@/hooks/useLiveEvents';
 import { cn } from '@/lib/cn';
 import { formatRelative } from '@/lib/format';
-import { EMPLOYEE_STATUS, RUN_STATUS, STEP_STATUS, SYSTEM_LABEL, TONE_TEXT, type Tone } from '@/lib/labels';
-import type { EmployeeStatus, RunStatus, StepStatus, StepSystem } from '@/lib/types';
+import { TONE_TEXT } from '@/lib/labels';
+import { describeLiveEvent } from '@/lib/live-event';
 
 /* ------------------------------------------------------------------ Fil d'activité */
 
-interface Described {
-  icon: IconComponent;
-  title: string;
-  detail: string;
-  tone: Tone;
-  to: string | null;
-}
-
-/** Traduit un événement SSE brut en phrase lisible. */
-function describe(event: LiveEntry): Described {
-  const data = event.data as {
-    runId?: string;
-    employeeId?: string;
-    status?: string;
-    step?: string;
-    detail?: string | null;
-    scope?: string;
-  };
-  const to = data.runId ? `/executions/${data.runId}` : data.employeeId ? `/employes/${data.employeeId}` : null;
-  if (event.type === 'step.updated') {
-    const system = (data.step?.split('.')[0] ?? 'core') as StepSystem;
-    const status = STEP_STATUS[(data.status ?? 'RUNNING') as StepStatus] ?? STEP_STATUS.RUNNING;
-    return {
-      icon: IconFlow,
-      title: `Étape ${SYSTEM_LABEL[system] ?? system} · ${status.label.toLowerCase()}`,
-      detail: data.detail || `Signal reçu de n8n (${data.step ?? 'étape'})`,
-      tone: status.tone,
-      to,
-    };
-  }
-  if (event.type === 'run.updated') {
-    const status = RUN_STATUS[(data.status ?? 'RUNNING') as RunStatus] ?? RUN_STATUS.RUNNING;
-    return { icon: IconFlow, title: `Exécution ${status.label.toLowerCase()}`, detail: 'Workflow mis à jour par n8n', tone: status.tone, to };
-  }
-  if (event.type === 'employee.updated' && data.scope === 'compliance') {
-    return { icon: IconShieldCheck, title: 'Contrôle de conformité', detail: 'Résultats mis à jour', tone: 'brand', to: '/conformite' };
-  }
-  const status = data.status ? EMPLOYEE_STATUS[data.status as EmployeeStatus] : undefined;
-  return {
-    icon: IconPerson,
-    title: status ? `Fiche : ${status.label.toLowerCase()}` : 'Fiche employé mise à jour',
-    detail: 'Cycle de vie de l’employé',
-    tone: status?.tone ?? 'neutral',
-    to,
-  };
-}
 
 /** Bouton « activité en direct » de la barre supérieure : compteur de nouveautés et fil des derniers événements. */
 export function LiveActivity() {
   const { events, unread, markRead, connected } = useLive();
   const [open, setOpen] = useState(false);
+  useEffect(() => {
+    if (open && unread) markRead();
+  }, [open, unread, markRead]);
   return (
     <Popover.Root
       open={open}
@@ -74,7 +31,7 @@ export function LiveActivity() {
         aria-label={unread ? `Activité en direct, ${unread} nouveauté${unread > 1 ? 's' : ''}` : 'Activité en direct'}
         title="Activité en direct"
       >
-        <IconPulse className="size-[18px]" />
+        <span key={events[0]?.seq ?? 0} className={events.length && connected ? 'incoming-signal' : undefined}><IconPulse className="size-[18px]" /></span>
         {unread > 0 ? (
           <span
             className="absolute right-0.5 top-0.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-brand px-1 text-[10px] font-semibold text-on-brand ring-2 ring-[var(--tp-canvas)]"
@@ -104,7 +61,7 @@ export function LiveActivity() {
           ) : (
             <ol className="max-h-[min(60vh,420px)] divide-y divide-line overflow-y-auto">
               {events.map((event) => {
-                  const item = describe(event);
+                  const item = describeLiveEvent(event);
                   const body = (
                     <>
                       <span className={cn('mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md bg-hover', TONE_TEXT[item.tone])}>
@@ -118,7 +75,7 @@ export function LiveActivity() {
                     </>
                   );
                   return (
-                    <li key={event.seq}>
+                    <li key={event.seq} className="activity-entry">
                       {item.to ? (
                         <Popover.Close asChild>
                           <Link to={item.to} className="flex items-start gap-3 px-4 py-2.5 transition-colors hover:bg-hover">

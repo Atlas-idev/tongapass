@@ -38,17 +38,26 @@ const axe = (page: Page) =>
 test('accueil (build de production, CSP active) : aucune violation grave', async ({ page }) => {
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
-  await page.waitForTimeout(2600);
+  await page.evaluate(() => document.fonts.ready);
   const results = await axe(page).analyze();
   const serious = results.violations.filter((v) => ['serious', 'critical'].includes(v.impact ?? ''));
   expect(serious.map((v) => `${v.id}: ${v.help}`)).toEqual([]);
   await page.screenshot({ path: `${SHOTS}/accueil.png` });
+  const demo = page.getByRole('figure', { name: 'Exemple de fiche d’accès' });
+  await demo.scrollIntoViewIfNeeded();
+  await expect(demo.getByText('Accès ouverts')).toBeVisible();
+  await demo.getByRole('button', { name: 'Rejouer l’exemple' }).click();
+  await expect(demo.getByText('En cours…')).toBeVisible();
+  await expect(demo.getByText('Accès ouverts')).toBeVisible();
 });
 
 test('fiche mobile au clavier et connexion depuis un lien vers une arrivée', async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/arrivees/nouvelle');
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+  await page.evaluate(() => document.fonts.ready);
+  await page.screenshot({ path: `${SHOTS}/accueil-mobile.png` });
   const example = page.getByRole('figure', { name: 'Exemple de fiche d’accès' });
   await example.getByRole('tab', { name: 'Arrivée' }).focus();
   await page.keyboard.press('ArrowRight');

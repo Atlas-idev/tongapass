@@ -1,4 +1,6 @@
-import { useId } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
+import { IconRetry } from '@/components/icons';
 import { IconAutomation, IconBranch, IconChat, IconKey, IconLayers, IconLedger, IconMail, IconPeople, type IconComponent } from '@/components/icons';
 
 interface Node {
@@ -36,13 +38,29 @@ const EDGES = [
 ] as const;
 
 /**
- * Schéma d'architecture, fixe : le portail appelle l'API, qui déclenche n8n ; n8n agit sur
+ * Le portail appelle l'API, qui déclenche n8n ; n8n agit sur
  * chaque outil et renvoie des rappels signés (en pointillés) vers l'API.
  */
 export function FlowDiagram() {
   const uid = useId().replace(/:/g, '');
+  const diagram = useRef<SVGSVGElement>(null);
+  const [playback, setPlayback] = useState(0);
+  const reduced = usePrefersReducedMotion();
+  useEffect(() => {
+    const node = diagram.current;
+    if (!node || reduced) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setPlayback((previous) => previous + 1);
+        observer.disconnect();
+      }
+    });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [reduced]);
   return (
-    <svg viewBox="0 0 1000 372" className="h-auto w-full" role="img" aria-labelledby={`${uid}-title`}>
+    <>
+    <svg ref={diagram} viewBox="0 0 1000 372" className="h-auto w-full" role="img" aria-labelledby={`${uid}-title`}>
       <title id={`${uid}-title`}>
         Architecture : le portail RH appelle l’API TongaPass, qui déclenche n8n ; n8n crée ou révoque les accès dans Keycloak, Gitea,
         Mattermost et par e-mail, puis renvoie à l’API des rappels signés. L’API journalise tout dans PostgreSQL.
@@ -51,6 +69,7 @@ export function FlowDiagram() {
       {EDGES.map((edge) => (
         <g key={edge.id}>
           <path d={edge.d} fill="none" stroke={'back' in edge ? 'var(--tp-accent)' : 'var(--tp-ink-3)'} strokeWidth="1.4" strokeDasharray={'back' in edge ? '5 4' : undefined} />
+          {playback > 0 && !reduced && <path key={playback} className="flow-packet" data-edge={edge.id} d={edge.d} fill="none" pathLength="1" stroke="var(--tp-brand)" strokeLinecap="round" strokeWidth="3" strokeDasharray=".09 1.1" aria-hidden="true" />}
           {'label' in edge ? (
             <text x={edge.lx} y={edge.ly} textAnchor="middle" className="fill-ink-3 text-[11px]">
               {edge.label}
@@ -81,5 +100,7 @@ export function FlowDiagram() {
         </g>
       ))}
     </svg>
+    {!reduced && <button className="diagram-replay" type="button" onClick={() => setPlayback((previous) => previous + 1)}><IconRetry aria-hidden="true" />Rejouer le flux</button>}
+    </>
   );
 }
