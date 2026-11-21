@@ -609,9 +609,7 @@ export class WorkflowsService {
   async list(query: RunQueryDto): Promise<Paginated<RunSummary>> {
     const qb = this.dataSource
       .getRepository(WorkflowRun)
-      .createQueryBuilder('run')
-      .innerJoinAndSelect('run.employee', 'employee')
-      .leftJoinAndSelect('run.steps', 'step');
+      .createQueryBuilder('run');
     if (query.type) qb.andWhere('run.type = :type', { type: query.type });
     if (query.status?.length) qb.andWhere('run.status IN (:...status)', { status: query.status });
     if (query.employeeId) qb.andWhere('run.employeeId = :employeeId', { employeeId: query.employeeId });
@@ -620,8 +618,8 @@ export class WorkflowsService {
     const ids = await qb
       .clone()
       .select('run.id', 'id')
-      .addSelect('run.createdAt', 'created')
       .orderBy('run.createdAt', 'DESC')
+      .addOrderBy('run.id', 'DESC')
       .offset((query.page - 1) * query.pageSize)
       .limit(query.pageSize)
       .getRawMany<{ id: string }>();
@@ -634,6 +632,7 @@ export class WorkflowsService {
       .leftJoinAndSelect('run.steps', 'step')
       .where('run.id IN (:...ids)', { ids: ids.map((row) => row.id) })
       .orderBy('run.createdAt', 'DESC')
+      .addOrderBy('run.id', 'DESC')
       .addOrderBy('step.position', 'ASC')
       .getMany();
     return paginate(runs.map((run) => this.toSummary(run)), total, query.page, query.pageSize);

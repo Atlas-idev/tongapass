@@ -5,7 +5,7 @@
 ```bash
 node scripts/init-env.mjs          # noter le mot de passe de démonstration affiché
 docker compose up -d --build
-docker compose ps                  # 9 services « healthy » (bootstrap : « exited (0) »)
+docker compose ps                  # 8 services actifs, bootstrap terminé avec le code 0
 ```
 
 Ouvrez dans des onglets : portail `http://localhost:8088`, Mailpit `http://localhost:8025`, Keycloak `http://localhost:8180/admin`, Gitea `http://localhost:3300`, Mattermost `http://localhost:8065`, n8n `http://localhost:5678`.
@@ -16,9 +16,9 @@ Affichage conseillé : navigateur à 110 %, thème clair, notifications système
 
 | Temps | À l'écran | Voix off (proposition) |
 |---|---|---|
-| 0:00–0:20 | Page d'accueil TongaPass : aperçu animé d'une arrivée, puis défilement jusqu'au schéma d'architecture animé | « Quand un salarié arrive, il lui faut des comptes. Quand il change de poste, ses droits doivent suivre. Quand il part, il faut tout lui retirer. TongaPass automatise ces trois moments avec n8n et Keycloak. *Tonga*, en malgache, veut dire *arriver*. » |
+| 0:00–0:20 | Accueil TongaPass. Passer la fiche d’accès d’Arrivée à Mobilité, puis à Départ | « Quand un salarié arrive, il lui faut des comptes. Quand il change de poste, ses droits doivent suivre. Quand il part, il faut tout lui retirer. TongaPass automatise ces trois moments avec n8n et Keycloak. *Tonga*, en malgache, veut dire *arriver*. » |
 | 0:20–0:35 | Connexion Keycloak (page à la charte) en **rh.manager** | « Connexion unique OIDC avec PKCE : le portail ne voit jamais le mot de passe. » |
-| 0:35–0:55 | Vue d'ensemble : indicateurs, jauge de conformité, agenda ; montrer le **pouls** de la barre supérieure | « La vue d'ensemble montre les mouvements à venir, les exécutions à traiter, les fins de contrat et l'état de conformité des comptes. En haut, ce pouls bat à chaque signal envoyé par n8n : tout est en temps réel. » |
+| 0:35–0:55 | Vue d'ensemble : indicateurs, jauge de conformité, agenda et état de la connexion au fil d’activité | « La vue d'ensemble montre les mouvements à venir, les exécutions à traiter, les fins de contrat et l'état de conformité des comptes. Le fil d’activité permet de retrouver les derniers événements reçus de n8n. » |
 | 0:55–1:35 | Assistant : Hanitra Rakoto, *Développement back-end*, étape Vérification, calendrier | « L'identifiant et l'adresse professionnelle sont générés. Le profil donne le minimum nécessaire. Par défaut, les comptes sont créés la veille de l'arrivée ; pour la démonstration, je les crée maintenant. » |
 | 1:35–2:05 | Frise qui se valide étape par étape, puis ouverture du **fil d'activité en direct** | « n8n crée le compte Keycloak, attribue rôles et groupes, ouvre Gitea et Mattermost, puis envoie l'e-mail de bienvenue. Chaque étape est confirmée par un rappel signé, et apparaît aussitôt dans le fil d'activité. » |
 | 2:05–2:30 | n8n (canvas), Keycloak (rôles), Mailpit (lien d'activation) | « Voici le workflow n8n, et le résultat réel. Aucun mot de passe par e-mail : un lien d'activation Keycloak valable 48 heures. » |

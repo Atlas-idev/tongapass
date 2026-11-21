@@ -30,7 +30,7 @@ export class ErrorBoundary extends Component<{ children: ReactNode; resetKey?: s
         <p className="mt-2 text-sm text-ink-3">
           Une erreur inattendue s’est produite. Vos données ne sont pas affectées. Rechargez la page ou revenez au tableau de bord.
         </p>
-        <p className="mt-3 rounded-xl border border-line bg-surface px-3 py-2 font-mono text-xs text-ink-3">{this.state.error.message}</p>
+        <p className="mt-3 rounded-lg border border-line bg-surface px-3 py-2 font-mono text-xs text-ink-3">{this.state.error.message}</p>
         <Button className="mt-5" variant="primary" onClick={() => window.location.reload()} icon={<IconRetry className="size-4" />}>
           Recharger
         </Button>

@@ -1,5 +1,4 @@
 import { IconScan, IconShieldCheck } from '@/components/icons';
-import { motion, useReducedMotion } from 'motion/react';
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
@@ -7,7 +6,6 @@ import { useMe } from '@/auth/AuthProvider';
 import { ComplianceBadge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { EmptyState, ErrorState, PageHeader, Skeleton } from '@/components/ui/Feedback';
-import { CountUp } from '@/components/ui/Motion';
 import { Segmented } from '@/components/ui/Segmented';
 import { useComplianceOverview, useScanCompliance } from '@/hooks/queries';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
@@ -23,18 +21,15 @@ const ORDER: ComplianceStatus[] = ['DRIFT', 'UNREACHABLE', 'NO_ACCOUNT', 'COMPLI
 
 /** Répartition des contrôles : barre empilée, chaque segment étiqueté dans la légende. */
 function Distribution({ counts, total }: { counts: Record<ComplianceStatus, number>; total: number }) {
-  const reduced = useReducedMotion();
   const segments = (['COMPLIANT', 'DRIFT', 'NO_ACCOUNT', 'UNREACHABLE'] as ComplianceStatus[]).filter((status) => counts[status] > 0);
   return (
     <div className="space-y-3">
       <div className="flex h-2.5 gap-0.5 overflow-hidden rounded-full bg-sunken" role="img" aria-label={segments.length ? `Répartition : ${segments.map((s) => `${COMPLIANCE_STATUS[s].label} ${counts[s]}`).join(', ')}` : 'Aucun contrôle enregistré'}>
-        {segments.map((status, index) => (
-          <motion.span
+        {segments.map((status) => (
+          <span
             key={status}
             className={cn('h-full first:rounded-l-full last:rounded-r-full', TONE_DOT[COMPLIANCE_STATUS[status].tone])}
-            initial={reduced ? false : { width: 0 }}
-            animate={{ width: `${(counts[status] / Math.max(total, 1)) * 100}%` }}
-            transition={{ duration: 0.5, delay: index * 0.06, ease: [0.2, 0.8, 0.2, 1] }}
+            style={{ width: `${(counts[status] / Math.max(total, 1)) * 100}%` }}
           />
         ))}
       </div>
@@ -46,7 +41,7 @@ function Distribution({ counts, total }: { counts: Record<ComplianceStatus, numb
               {COMPLIANCE_STATUS[status].label}
             </dt>
             <dd className={cn('mt-0.5 text-xl font-semibold', status === 'DRIFT' && counts[status] > 0 && 'text-danger')}>
-              <CountUp value={counts[status]} />
+              <span className="tabular">{counts[status]}</span>
             </dd>
           </div>
         ))}
@@ -121,7 +116,7 @@ export function CompliancePage() {
 
       {error ? <ErrorState error={error} onRetry={() => void refetch()} /> : null}
 
-      <section className="glass rounded-[var(--radius-panel)] p-4" aria-label="Synthèse">
+      <section className="panel rounded-[var(--radius-panel)] p-4" aria-label="Synthèse">
         {isPending || !summary ? (
           <Skeleton className="h-24" />
         ) : !summary.enabled ? (
@@ -156,7 +151,7 @@ export function CompliancePage() {
         />
       </div>
 
-      <div className="overflow-hidden glass rounded-[var(--radius-panel)]">
+      <div className="overflow-hidden panel rounded-[var(--radius-panel)]">
         {isPending ? (
           <div className="space-y-2.5 p-4">
             {Array.from({ length: 5 }, (_, i) => (
@@ -170,7 +165,7 @@ export function CompliancePage() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full min-w-[760px] text-sm">
-              <thead className="border-b border-line bg-hover text-left text-[11px] uppercase tracking-[0.08em] text-ink-3">
+              <thead className="border-b border-line bg-sunken text-left text-xs font-medium text-ink-2">
                 <tr>
                   <th scope="col" className="px-4 py-2.5 font-medium">Employé</th>
                   <th scope="col" className="px-4 py-2.5 font-medium">Profil</th>

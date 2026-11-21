@@ -8,7 +8,6 @@ import { Button, IconButton } from '@/components/ui/Button';
 import { Dialog } from '@/components/ui/Dialog';
 import { EmptyState, ErrorState, PageHeader, Skeleton } from '@/components/ui/Feedback';
 import { Checkbox, Field, Input, Textarea } from '@/components/ui/Field';
-import { Reveal } from '@/components/ui/Motion';
 import { useCatalog, useDeleteProfile, useProfiles, useSaveProfile } from '@/hooks/queries';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { ApiError, errorMessage } from '@/lib/api';
@@ -152,7 +151,7 @@ function ProfileDialog({
           </div>
         </fieldset>
         {KINDS.map((kind) => (
-          <fieldset key={kind.key} className="rounded-2xl border border-line bg-hover/40">
+          <fieldset key={kind.key} className="rounded-xl border border-line bg-hover/40">
             <legend className="ml-3 px-1 text-[13px] font-medium">{kind.title}</legend>
             <div className="grid gap-x-4 px-3.5 pb-2 sm:grid-cols-2">
               {catalog[kind.key].map((item) => {
@@ -237,9 +236,9 @@ export function AccessProfilesPage() {
         </EmptyState>
       ) : (
         <ul className="grid gap-4 lg:grid-cols-2">
-          {data?.map((profile, index) => (
+          {data?.map((profile) => (
             <li key={profile.id}>
-              <Reveal index={index} className={cn('flex h-full flex-col glass rounded-[var(--radius-panel)]', !profile.isActive && 'opacity-70')}>
+              <div className={cn('flex h-full flex-col panel rounded-[var(--radius-panel)]', !profile.isActive && 'opacity-70')}>
                 <div className="flex items-start gap-3 border-b border-line px-4 py-3">
                   <span className="mt-1.5 size-2.5 shrink-0 rounded-[3px]" style={{ background: profile.color }} aria-hidden="true" />
                   <div className="min-w-0 flex-1">
@@ -273,7 +272,7 @@ export function AccessProfilesPage() {
                 <p className="border-t border-line px-4 py-2 font-mono text-xs text-ink-3" translate="no">
                   {profile.code}
                 </p>
-              </Reveal>
+              </div>
             </li>
           ))}
         </ul>

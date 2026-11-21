@@ -496,6 +496,13 @@ describe('TongaPass API (e2e)', () => {
       const departure = employee.body.runs.find((run: { type: string; status: string }) => run.type === 'OFFBOARDING');
       expect(departure.status).toBe('SCHEDULED');
       expect(departure.scheduledFor.slice(0, 10)).toBe(inDays(60));
+      const pageOfRuns = (page: number) => http().get('/api/v1/workflow-runs')
+        .query({ employeeId: arrival.employee.id, pageSize: 1, page })
+        .set('Authorization', `Bearer ${hr}`).expect(200);
+      const first = await pageOfRuns(1);
+      const second = await pageOfRuns(2);
+      expect(first.body.total).toBe(2);
+      expect([first.body.items[0].id, second.body.items[0].id].sort()).toEqual([arrival.id, departure.id].sort());
     });
   });
 

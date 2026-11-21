@@ -24,7 +24,7 @@ export function Dialog({ open, onOpenChange, title, description, children, foote
   return (
     <RadixDialog.Root open={open} onOpenChange={onOpenChange}>
       <RadixDialog.Portal>
-        <RadixDialog.Overlay className="fixed inset-0 z-50 bg-[#060912]/40 backdrop-blur-[6px] data-[state=open]:animate-[fade-in_var(--duration-base)_ease-out] data-[state=closed]:animate-[fade-out_var(--duration-fast)_ease-in]" />
+        <RadixDialog.Overlay className="fixed inset-0 z-50 bg-[#1c1613]/45 data-[state=open]:animate-[fade-in_var(--duration-base)_ease-out] data-[state=closed]:animate-[fade-out_var(--duration-fast)_ease-in]" />
         <RadixDialog.Content
           role={role}
           onOpenAutoFocus={(event) => {
@@ -36,21 +36,21 @@ export function Dialog({ open, onOpenChange, title, description, children, foote
           }}
           className={cn(
             'fixed left-1/2 top-1/2 z-50 flex max-h-[min(90dvh,780px)] w-[calc(100vw-2rem)] -translate-x-1/2 -translate-y-1/2 flex-col',
-            'glass-strong overflow-hidden rounded-[22px] overscroll-contain',
+            'panel-raised overflow-hidden rounded-[var(--radius-panel)] overscroll-contain',
             'data-[state=open]:animate-[dialog-in_var(--duration-base)_var(--ease-out)] data-[state=closed]:animate-[dialog-out_var(--duration-fast)_ease-in]',
             size === 'md' ? 'max-w-lg' : 'max-w-2xl',
           )}
         >
           <header className="flex items-start justify-between gap-4 border-b border-line px-6 py-5">
             <div className="space-y-1">
-              <RadixDialog.Title className="text-[17px] font-bold tracking-[-0.015em]">{title}</RadixDialog.Title>
+              <RadixDialog.Title className="text-base font-semibold">{title}</RadixDialog.Title>
               {description ? (
                 <RadixDialog.Description className="text-[13px] text-ink-3">{description}</RadixDialog.Description>
               ) : (
                 <RadixDialog.Description className="sr-only">{title}</RadixDialog.Description>
               )}
             </div>
-            <RadixDialog.Close className="-mr-2 inline-flex size-9 items-center justify-center rounded-xl text-ink-3 transition-colors hover:bg-hover hover:text-ink" aria-label="Fermer">
+            <RadixDialog.Close className="-mr-2 inline-flex size-9 items-center justify-center rounded-lg text-ink-3 transition-colors hover:bg-hover hover:text-ink" aria-label="Fermer">
               <IconClose className="size-4" />
             </RadixDialog.Close>
           </header>

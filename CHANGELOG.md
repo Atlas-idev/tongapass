@@ -1,5 +1,11 @@
 # Journal des versions
 
+## En cours
+
+- Nouvelle charte café crème pour le portail, la connexion Keycloak et les e-mails. L’accueil présente une fiche d’accès interactive pour les trois mouvements RH.
+- Titres en Instrument Serif, filtres utilisables au clavier et transitions courtes avec prise en compte des préférences de mouvement.
+- Correction de la pagination des exécutions et des liens du tableau de bord. L’assistant vérifie les dates personnalisées avant de planifier l’arrivée.
+
 ## 1.2.0 — 2026-11-21
 
 ### Modifié

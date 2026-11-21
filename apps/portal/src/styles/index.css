@@ -1,13 +1,15 @@
 @import 'tailwindcss';
+@import './landing.css';
 
 /* Thème sombre piloté par l'attribut data-theme sur <html> */
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
 /*
- * Charte TongaPass « Lagon de verre » : surfaces en verre dépoli posées sur un fond d'aurore,
- * une marque lagon (sarcelle) et nuit (indigo), des couleurs d'état qui portent toujours un sens.
- * Lagon (marque, accès accordé) · Indigo (en cours, liens) · Corail (révocation, échec)
- * · Ambre (planifié, attention) · Encre (texte).
+ * Charte TongaPass « café crème » : six tons, de l'expresso à l'ivoire.
+ *   #4A3A34 expresso · #77574A cacao · #A8836C caramel · #D0AE92 sable · #EBD7BE crème · #F9F2E4 ivoire
+ * Surfaces pleines, bordures fines, aucune transparence ni dégradé. Les couleurs d'état (olive,
+ * ardoise, brique, ocre) sont accordées à la palette et toujours doublées d'un libellé.
+ * Contrastes vérifiés : texte courant ≥ 4,5:1 sur tous les fonds, en clair et en sombre.
  */
 @theme inline {
   --font-sans: 'Plus Jakarta Sans Variable', 'Plus Jakarta Sans', ui-sans-serif, system-ui, 'Segoe UI', sans-serif;
@@ -44,123 +46,100 @@
   --color-series-departures: var(--tp-series-departures);
 
   --shadow-overlay: var(--tp-shadow-overlay);
-  --shadow-glass: var(--tp-shadow-glass);
+  --shadow-panel: var(--tp-shadow-panel);
 }
 
-/* Jetons d'animation (mêmes valeurs que src/lib/motion.ts) : sortie ≈ 65 % de l'entrée */
+/* Transitions de navigation, d'ouverture et de sélection. */
 :root {
+  --font-display: 'Instrument Serif', Georgia, serif;
   --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
-  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
-  --duration-fast: 130ms;
-  --duration-base: 200ms;
-  --duration-slow: 320ms;
-  --radius-panel: 18px;
-  --blur-glass: 18px;
+  --duration-fast: 120ms;
+  --duration-base: 180ms;
+  --duration-slow: 280ms;
+  --radius-panel: 12px;
 }
 
 /* ------------------------------------------------------------------ Thème clair */
 :root {
   color-scheme: light;
-  --tp-canvas: #eef2f7;
-  /* Verre : blanc translucide, opaque à 72 % pour garder des contrastes AA quel que soit le fond */
-  --tp-surface: rgb(255 255 255 / 0.72);
-  --tp-sunken: rgb(241 245 250 / 0.72);
-  --tp-raised: rgb(255 255 255 / 0.86);
-  --tp-solid: #ffffff;
-  --tp-hover: rgb(15 23 42 / 0.045);
-  --tp-ink: #0b1324;
-  --tp-ink-2: #2e3a50;
-  --tp-ink-3: #475569;
-  --tp-line: rgb(15 23 42 / 0.09);
-  --tp-line-strong: rgb(15 23 42 / 0.17);
-  --tp-glass-edge: rgb(255 255 255 / 0.85);
+  --tp-canvas: #f9f2e4;
+  --tp-surface: #fffdf9;
+  --tp-sunken: #f3e8d6;
+  --tp-raised: #fffdf9;
+  --tp-solid: #fffdf9;
+  --tp-hover: rgb(74 58 52 / 0.06);
+  --tp-ink: #4a3a34;
+  --tp-ink-2: #5e4a41;
+  --tp-ink-3: #77574a;
+  --tp-line: #ebdcc8;
+  --tp-line-strong: #d0ae92;
 
-  --tp-brand: #0a6e67;
-  --tp-brand-strong: #075a54;
-  --tp-brand-soft: rgb(20 184 166 / 0.13);
-  --tp-on-brand: #ffffff;
-  --tp-accent: #4f46e5;
-  --tp-gradient-brand: linear-gradient(135deg, #0fa596 0%, #0b7f86 48%, #4f46e5 100%);
-  --tp-gradient-text: linear-gradient(92deg, #0a6e67 0%, #3f49c9 100%);
-  /* Bouton principal : dégradé assez sombre pour un texte blanc à plus de 4,5:1 sur toute sa longueur */
-  --tp-gradient-button: linear-gradient(135deg, #0a6e67 0%, #0d6680 52%, #4338ca 100%);
+  --tp-brand: #77574a;
+  --tp-brand-strong: #4a3a34;
+  --tp-brand-soft: rgb(168 131 108 / 0.16);
+  --tp-on-brand: #fffdf9;
+  --tp-accent: #a8836c;
 
-  --tp-success: #03684a;
-  --tp-success-soft: rgb(16 185 129 / 0.13);
-  --tp-info: #4338ca;
-  --tp-info-soft: rgb(99 102 241 / 0.12);
-  --tp-danger: #b0103a;
-  --tp-danger-strong: #8f0d30;
-  --tp-danger-soft: rgb(244 63 94 / 0.11);
-  --tp-warning: #8a4a08;
-  --tp-warning-soft: rgb(245 158 11 / 0.15);
+  --tp-success: #4b6b35;
+  --tp-success-soft: rgb(75 107 53 / 0.12);
+  --tp-info: #3d5c78;
+  --tp-info-soft: rgb(61 92 120 / 0.12);
+  --tp-danger: #a23a2a;
+  --tp-danger-strong: #852f22;
+  --tp-danger-soft: rgb(162 58 42 / 0.12);
+  --tp-warning: #86560f;
+  --tp-warning-soft: rgb(134 86 15 / 0.12);
 
-  /* Séries du graphique : lagon et indigo, distinctes en luminance (daltonisme) */
-  --tp-series-arrivals: #0d9488;
-  --tp-series-departures: #6366f1;
+  /* Séries du graphique : cacao et caramel, distinctes en luminance (daltonisme) */
+  --tp-series-arrivals: #77574a;
+  --tp-series-departures: #a8836c;
 
-  --tp-aurora-1: rgb(45 212 191 / 0.44);
-  --tp-aurora-2: rgb(129 140 248 / 0.4);
-  --tp-aurora-3: rgb(125 211 252 / 0.38);
-  --tp-aurora-4: rgb(244 114 182 / 0.2);
-  --tp-grid: rgb(15 23 42 / 0.05);
-
-  --tp-shadow-glass: 0 1px 1px rgb(15 23 42 / 0.03), 0 10px 30px -16px rgb(15 23 42 / 0.22);
-  --tp-shadow-overlay: 0 1px 2px rgb(15 23 42 / 0.06), 0 24px 48px -16px rgb(15 23 42 / 0.28);
+  --tp-shadow-panel: 0 1px 2px rgb(74 58 52 / 0.05);
+  --tp-shadow-overlay: 0 1px 2px rgb(74 58 52 / 0.08), 0 12px 32px -12px rgb(74 58 52 / 0.3);
 }
 
 /* ------------------------------------------------------------------ Thème sombre */
 [data-theme='dark'] {
   color-scheme: dark;
-  --tp-canvas: #060912;
-  --tp-surface: rgb(17 24 39 / 0.58);
-  --tp-sunken: rgb(8 12 22 / 0.5);
-  --tp-raised: rgb(20 27 44 / 0.86);
-  --tp-solid: #111827;
-  --tp-hover: rgb(255 255 255 / 0.055);
-  --tp-ink: #edf1f8;
-  --tp-ink-2: #c6cedc;
-  --tp-ink-3: #a3afc4;
-  --tp-line: rgb(255 255 255 / 0.085);
-  --tp-line-strong: rgb(255 255 255 / 0.16);
-  --tp-glass-edge: rgb(255 255 255 / 0.1);
+  --tp-canvas: #1c1613;
+  --tp-surface: #261e1a;
+  --tp-sunken: #201915;
+  --tp-raised: #2e2520;
+  --tp-solid: #2e2520;
+  --tp-hover: rgb(249 242 228 / 0.06);
+  --tp-ink: #f9f2e4;
+  --tp-ink-2: #ebd7be;
+  --tp-ink-3: #d0ae92;
+  --tp-line: rgb(235 215 190 / 0.1);
+  --tp-line-strong: rgb(235 215 190 / 0.22);
 
-  --tp-brand: #2dd4bf;
-  --tp-brand-strong: #5eead4;
-  --tp-brand-soft: rgb(45 212 191 / 0.13);
-  --tp-on-brand: #04201d;
-  --tp-accent: #a5b4fc;
-  --tp-gradient-brand: linear-gradient(135deg, #2dd4bf 0%, #22b8c8 45%, #818cf8 100%);
-  --tp-gradient-text: linear-gradient(92deg, #5eead4 0%, #a5b4fc 100%);
-  --tp-gradient-button: linear-gradient(135deg, #2dd4bf 0%, #38bdf8 55%, #818cf8 100%);
+  --tp-brand: #d0ae92;
+  --tp-brand-strong: #ebd7be;
+  --tp-brand-soft: rgb(208 174 146 / 0.14);
+  --tp-on-brand: #2a211d;
+  --tp-accent: #a8836c;
 
-  --tp-success: #34d399;
-  --tp-success-soft: rgb(52 211 153 / 0.13);
-  --tp-info: #a5b4fc;
-  --tp-info-soft: rgb(129 140 248 / 0.15);
-  --tp-danger: #fb7185;
-  --tp-danger-strong: #fda4af;
-  --tp-danger-soft: rgb(251 113 133 / 0.13);
-  --tp-warning: #fbbf24;
-  --tp-warning-soft: rgb(251 191 36 / 0.13);
+  --tp-success: #a6c78a;
+  --tp-success-soft: rgb(166 199 138 / 0.14);
+  --tp-info: #a3bed9;
+  --tp-info-soft: rgb(163 190 217 / 0.14);
+  --tp-danger: #ee9c8a;
+  --tp-danger-strong: #f5b9ab;
+  --tp-danger-soft: rgb(238 156 138 / 0.14);
+  --tp-warning: #e3b566;
+  --tp-warning-soft: rgb(227 181 102 / 0.14);
 
-  --tp-series-arrivals: #2dd4bf;
-  --tp-series-departures: #818cf8;
+  --tp-series-arrivals: #ebd7be;
+  --tp-series-departures: #a8836c;
 
-  --tp-aurora-1: rgb(20 184 166 / 0.38);
-  --tp-aurora-2: rgb(99 102 241 / 0.4);
-  --tp-aurora-3: rgb(14 165 233 / 0.22);
-  --tp-aurora-4: rgb(168 85 247 / 0.22);
-  --tp-grid: rgb(255 255 255 / 0.035);
-
-  --tp-shadow-glass: 0 1px 0 rgb(255 255 255 / 0.04) inset, 0 16px 40px -20px rgb(0 0 0 / 0.7);
-  --tp-shadow-overlay: 0 1px 0 rgb(255 255 255 / 0.06) inset, 0 28px 60px -18px rgb(0 0 0 / 0.75);
+  --tp-shadow-panel: 0 1px 0 rgb(0 0 0 / 0.2);
+  --tp-shadow-overlay: 0 16px 40px -16px rgb(0 0 0 / 0.7);
 }
 
 @layer base {
   html {
-    /* La barre supérieure flottante (≈ 72 px) ne masque jamais l'élément qui reçoit le focus */
-    scroll-padding-top: 5.5rem;
+    /* La barre supérieure (64 px) ne masque jamais l'élément qui reçoit le focus */
+    scroll-padding-top: 5rem;
     -webkit-text-size-adjust: 100%;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
@@ -168,27 +147,26 @@
   }
   body {
     @apply bg-canvas font-sans text-ink;
-    font-size: 14px;
+    font-size: 1rem;
     line-height: 1.5;
-    font-feature-settings: 'cv11', 'ss01';
   }
   h1,
   h2,
   h3 {
     @apply text-ink;
-    letter-spacing: -0.018em;
+    letter-spacing: -0.01em;
     text-wrap: balance;
   }
   p {
     text-wrap: pretty;
   }
   ::selection {
-    background: color-mix(in oklab, var(--tp-brand) 26%, transparent);
+    background: color-mix(in oklab, var(--tp-accent) 30%, transparent);
   }
   :focus-visible {
     outline: 2px solid var(--tp-info);
     outline-offset: 2px;
-    border-radius: 6px;
+    border-radius: 4px;
   }
   button,
   [role='button'],
@@ -214,14 +192,13 @@
     background-color: var(--tp-surface);
     color: var(--tp-ink);
   }
-  /* La liste déroulante native ne sait pas afficher le verre : fond plein */
   option,
   optgroup {
     background-color: var(--tp-solid);
     color: var(--tp-ink);
   }
   [id] {
-    scroll-margin-top: 6rem;
+    scroll-margin-top: 5.5rem;
   }
   ::-webkit-scrollbar {
     width: 10px;
@@ -239,86 +216,17 @@
 }
 
 @layer components {
-  /*
-   * Verre dépoli : fond translucide, flou d'arrière-plan, liseré lumineux en haut.
-   * Sans support de backdrop-filter, la surface devient presque opaque (lisibilité d'abord).
-   */
-  .glass {
+  /* Panneau : surface pleine, bordure fine, ombre à peine perceptible */
+  .panel {
     background: var(--tp-surface);
     border: 1px solid var(--tp-line);
-    box-shadow: var(--tp-shadow-glass), inset 0 1px 0 var(--tp-glass-edge);
-    -webkit-backdrop-filter: blur(var(--blur-glass)) saturate(165%);
-    backdrop-filter: blur(var(--blur-glass)) saturate(165%);
+    box-shadow: var(--tp-shadow-panel);
   }
-  .glass-strong {
+  /* Menus, fenêtres et notifications : au-dessus du contenu, ombre portée nette */
+  .panel-raised {
     background: var(--tp-raised);
     border: 1px solid var(--tp-line);
-    box-shadow: var(--tp-shadow-overlay), inset 0 1px 0 var(--tp-glass-edge);
-    -webkit-backdrop-filter: blur(26px) saturate(180%);
-    backdrop-filter: blur(26px) saturate(180%);
-  }
-  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .glass,
-    .glass-strong {
-      background: var(--tp-solid);
-    }
-  }
-
-  /* Texte en dégradé de marque (titres d'accroche, mot-symbole) */
-  .text-gradient {
-    background: var(--tp-gradient-text);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
-  .bg-gradient-brand {
-    background-image: var(--tp-gradient-brand);
-  }
-  .bg-gradient-button {
-    background-image: var(--tp-gradient-button);
-  }
-
-  /*
-   * Halo qui suit le pointeur sur les cartes interactives (variables --mx / --my posées en JS).
-   * Purement décoratif : invisible sans pointeur et avec les animations réduites.
-   */
-  .spotlight {
-    position: relative;
-    isolation: isolate;
-  }
-  .spotlight::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    opacity: 0;
-    transition: opacity var(--duration-slow) var(--ease-out);
-    background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 50%), color-mix(in oklab, var(--tp-brand) 14%, transparent), transparent 60%);
-    pointer-events: none;
-  }
-  .spotlight:hover::before {
-    opacity: 1;
-  }
-
-  /* Liseré animé (dégradé qui tourne) pour signaler une exécution en direct */
-  .live-border {
-    position: relative;
-  }
-  .live-border::after {
-    content: '';
-    position: absolute;
-    inset: -1px;
-    border-radius: inherit;
-    padding: 1px;
-    background: conic-gradient(from var(--angle, 0deg), transparent 0 55%, var(--tp-brand) 72%, var(--tp-accent) 86%, transparent 100%);
-    -webkit-mask:
-      linear-gradient(#000 0 0) content-box,
-      linear-gradient(#000 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
-    animation: spin-angle 3.2s linear infinite;
-    pointer-events: none;
+    box-shadow: var(--tp-shadow-overlay);
   }
 }
 
@@ -334,123 +242,14 @@
   }
 }
 
-@property --angle {
-  syntax: '<angle>';
-  initial-value: 0deg;
-  inherits: false;
-}
-
-@keyframes spin-angle {
-  to {
-    --angle: 360deg;
-  }
-}
-
-/* ------------------------------------------------------------------ Fond d'aurore */
-.aurora {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  overflow: hidden;
-  pointer-events: none;
-  background:
-    radial-gradient(1200px 600px at 110% -10%, var(--tp-aurora-2), transparent 60%),
-    radial-gradient(900px 520px at -10% 0%, var(--tp-aurora-1), transparent 60%),
-    var(--tp-canvas);
-}
-.aurora__blob {
-  position: absolute;
-  width: 46vmax;
-  height: 46vmax;
-  border-radius: 50%;
-  filter: blur(60px);
-  opacity: 0.9;
-  will-change: transform;
-}
-.aurora__blob--1 {
-  top: -14vmax;
-  left: -8vmax;
-  background: radial-gradient(circle at 40% 40%, var(--tp-aurora-1), transparent 66%);
-  animation: drift-1 38s ease-in-out infinite alternate;
-}
-.aurora__blob--2 {
-  top: 8vmax;
-  right: -16vmax;
-  background: radial-gradient(circle at 50% 50%, var(--tp-aurora-2), transparent 66%);
-  animation: drift-2 46s ease-in-out infinite alternate;
-}
-.aurora__blob--3 {
-  bottom: -22vmax;
-  left: 22vw;
-  background: radial-gradient(circle at 50% 50%, var(--tp-aurora-3), transparent 66%);
-  animation: drift-3 52s ease-in-out infinite alternate;
-}
-.aurora__blob--4 {
-  top: 30vh;
-  left: 38vw;
-  width: 26vmax;
-  height: 26vmax;
-  background: radial-gradient(circle at 50% 50%, var(--tp-aurora-4), transparent 66%);
-  animation: drift-2 60s ease-in-out infinite alternate-reverse;
-}
-/* Trame fine façon papier millimétré : l'ambiance d'un outil de travail, pas d'une affiche */
-.aurora__grid {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(var(--tp-grid) 1px, transparent 1px),
-    linear-gradient(90deg, var(--tp-grid) 1px, transparent 1px);
-  background-size: 44px 44px;
-  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 30%, transparent 75%);
-}
-
-@keyframes drift-1 {
-  to {
-    transform: translate3d(14vw, 10vh, 0) scale(1.15);
-  }
-}
-@keyframes drift-2 {
-  to {
-    transform: translate3d(-12vw, 8vh, 0) scale(0.9);
-  }
-}
-@keyframes drift-3 {
-  to {
-    transform: translate3d(8vw, -12vh, 0) scale(1.1);
-  }
-}
-
-/* Squelette de chargement : balayage lumineux discret (désactivé si animations réduites) */
+/* Squelette de chargement : simple variation d'opacité (figée si animations réduites) */
 .skeleton {
-  background: linear-gradient(90deg, var(--tp-hover) 0%, color-mix(in oklab, var(--tp-ink) 10%, transparent) 45%, var(--tp-hover) 90%);
-  background-size: 220% 100%;
-  animation: shimmer 1.4s ease-in-out infinite;
+  background: var(--tp-hover);
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
 }
-
-@keyframes shimmer {
-  from {
-    background-position: 100% 0;
-  }
-  to {
-    background-position: -120% 0;
-  }
-}
-
-/* Rayures qui défilent : barre de progression d'une exécution en cours */
-.progress-stripes {
-  background-image: linear-gradient(
-    -45deg,
-    rgb(255 255 255 / 0.28) 25%,
-    transparent 25% 50%,
-    rgb(255 255 255 / 0.28) 50% 75%,
-    transparent 75%
-  );
-  background-size: 14px 14px;
-  animation: stripes 0.9s linear infinite;
-}
-@keyframes stripes {
-  to {
-    background-position: 14px 0;
+@keyframes skeleton-pulse {
+  50% {
+    opacity: 0.55;
   }
 }
 
@@ -476,50 +275,60 @@
 @keyframes dialog-in {
   from {
     opacity: 0;
-    transform: translateY(10px) scale(0.97);
+    transform: translateY(6px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .screen-enter, .step-enter, .pass-card[data-state='active'] {
+    animation: content-in var(--duration-slow) var(--ease-out);
+  }
+  .hero-copy {
+    animation: content-in 440ms var(--ease-out);
+  }
+  @keyframes content-in {
+    from { transform: translateY(6px); opacity: .82; }
+    to { transform: translateY(0); opacity: 1; }
   }
 }
 
 @keyframes dialog-out {
   to {
     opacity: 0;
-    transform: translateY(6px) scale(0.98);
   }
 }
 
 @keyframes menu-in {
   from {
     opacity: 0;
-    transform: translateY(-4px) scale(0.97);
+    transform: translateY(-2px);
   }
 }
 
 @keyframes menu-out {
   to {
     opacity: 0;
-    transform: scale(0.97);
   }
 }
 
 @keyframes drawer-in {
   from {
-    transform: translateX(-24px);
+    transform: translateX(-16px);
     opacity: 0;
   }
 }
 
-/* Menus déroulants et fenêtres flottantes : s'ouvrent depuis leur déclencheur, se ferment plus vite */
+/* Menus déroulants et fenêtres flottantes : apparition brève, fermeture plus rapide */
 [role='menu'][data-state='open'],
 [data-radix-popper-content-wrapper] > [role='dialog'][data-state='open'] {
-  transform-origin: var(--radix-dropdown-menu-content-transform-origin, var(--radix-popover-content-transform-origin));
   animation: menu-in var(--duration-base) var(--ease-out);
 }
 [role='menu'][data-state='closed'],
 [data-radix-popper-content-wrapper] > [role='dialog'][data-state='closed'] {
-  transform-origin: var(--radix-dropdown-menu-content-transform-origin, var(--radix-popover-content-transform-origin));
   animation: menu-out 90ms ease-in;
 }
 
+/* Point d'état « en cours » : clignement lent, sans onde ni halo */
 @keyframes pulse-dot {
   0%,
   100% {
@@ -529,91 +338,13 @@
     opacity: 0.35;
   }
 }
-
-/* Onde qui s'élargit autour d'un point « en direct » */
-@keyframes ping {
-  0% {
-    transform: scale(1);
-    opacity: 0.55;
-  }
-  80%,
-  100% {
-    transform: scale(2.6);
-    opacity: 0;
-  }
-}
 .live-dot {
-  position: relative;
   display: inline-flex;
   width: 8px;
   height: 8px;
   border-radius: 999px;
   background: currentColor;
-}
-.live-dot::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: currentColor;
-  animation: ping 1.8s var(--ease-out) infinite;
-}
-
-/* Paquet de données qui circule sur un tracé (schéma d'architecture de l'accueil) */
-@keyframes dash-flow {
-  to {
-    stroke-dashoffset: -40;
-  }
-}
-.flow-dash {
-  stroke-dasharray: 4 6;
-  animation: dash-flow 1.6s linear infinite;
-}
-
-/* Anneau qui s'élargit autour de l'étape en cours */
-@keyframes ring-pulse {
-  0% {
-    transform: scale(0.92);
-    opacity: 0.7;
-  }
-  100% {
-    transform: scale(1.32);
-    opacity: 0;
-  }
-}
-
-/* Pouls temps réel : la ligne glisse d'un pas vers la gauche à chaque échantillon */
-@keyframes hb-shift {
-  from {
-    transform: translateX(4px);
-  }
-  to {
-    transform: translateX(0);
-  }
-}
-
-/* Battant de verre du logo qui « respire » (écran de chargement) */
-@keyframes door-swing {
-  0%,
-  100% {
-    stroke-opacity: 0.62;
-  }
-  50% {
-    stroke-opacity: 1;
-  }
-}
-
-/* Bandeau des technologies qui défile (contenu doublé, translation de la moitié) */
-@keyframes marquee {
-  to {
-    transform: translateX(-50%);
-  }
-}
-
-@keyframes float-y {
-  50% {
-    transform: translateY(-6px);
-  }
+  animation: pulse-dot 2s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -625,26 +356,18 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
-  .aurora__blob {
-    animation: none !important;
-  }
-  .live-dot::after {
-    display: none;
-  }
 }
 
-/* Notifications (sonner) : verre renforcé, mêmes bordures que le reste de l'interface */
+/* Notifications (sonner) : mêmes surfaces et bordures que le reste de l'interface */
 [data-sonner-toaster] {
   --normal-bg: var(--tp-raised);
   --normal-border: var(--tp-line);
   --normal-text: var(--tp-ink);
-  --border-radius: 14px;
+  --border-radius: 10px;
   font-family: var(--font-sans);
 }
 [data-sonner-toast].tp-toast {
   box-shadow: var(--tp-shadow-overlay);
-  -webkit-backdrop-filter: blur(22px) saturate(170%);
-  backdrop-filter: blur(22px) saturate(170%);
   font-size: 13px;
 }
 [data-sonner-toast].tp-toast [data-description] {

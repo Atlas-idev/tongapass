@@ -1,11 +1,8 @@
-import { MotionConfig } from 'motion/react';
 import { Dialog } from 'radix-ui';
 import { useEffect, useRef, useState } from 'react';
 import { Outlet, useLocation } from 'react-router';
 import { LiveContext, useLiveEventsConnection } from '@/hooks/useLiveEvents';
 import { cn } from '@/lib/cn';
-import { PageTransition } from '../ui/Motion';
-import { AuroraBackground } from './AuroraBackground';
 import { CommandPalette } from './CommandPalette';
 import { ErrorBoundary } from './ErrorBoundary';
 import { Sidebar } from './Sidebar';
@@ -61,48 +58,41 @@ export function AppShell() {
   }, [location.pathname]);
 
   return (
-    <MotionConfig reducedMotion="user">
-      <LiveContext.Provider value={live}>
-        <AuroraBackground />
-        <a
-          href="#main"
-          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-3 focus:z-[60] focus:rounded-xl focus:bg-ink focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-canvas"
-        >
-          Aller au contenu
-        </a>
-        <div className="flex min-h-dvh">
-          <aside className={cn('hidden shrink-0 transition-[width] duration-300 ease-out lg:block', collapsed ? 'w-[92px]' : 'w-[272px]')}>
-            <div className="sticky top-0 h-dvh p-3">
-              <div className="glass h-full overflow-hidden rounded-[22px]">
-                <Sidebar collapsed={collapsed} onToggleCollapsed={toggleCollapsed} />
-              </div>
-            </div>
-          </aside>
-
-          <Dialog.Root open={menuOpen} onOpenChange={setMenuOpen}>
-            <Dialog.Portal>
-              <Dialog.Overlay className="fixed inset-0 z-40 bg-[#060912]/40 backdrop-blur-[6px] data-[state=open]:animate-[fade-in_var(--duration-base)_ease-out] lg:hidden" />
-              <Dialog.Content className="glass-strong fixed inset-y-3 left-3 z-50 w-[min(80vw,288px)] overflow-hidden rounded-[22px] data-[state=open]:animate-[drawer-in_var(--duration-slow)_var(--ease-out)] lg:hidden">
-                <Dialog.Title className="sr-only">Menu</Dialog.Title>
-                <Dialog.Description className="sr-only">Navigation principale</Dialog.Description>
-                <Sidebar onNavigate={() => setMenuOpen(false)} />
-              </Dialog.Content>
-            </Dialog.Portal>
-          </Dialog.Root>
-
-          <div className="flex min-w-0 flex-1 flex-col">
-            <Topbar onOpenMenu={() => setMenuOpen(true)} onOpenSearch={() => setPaletteOpen(true)} />
-            <main id="main" tabIndex={-1} className="mx-auto w-full max-w-[1280px] flex-1 px-4 pb-10 pt-7 outline-none sm:px-6 lg:px-8">
-              <ErrorBoundary resetKey={location.pathname}>
-                <PageTransition key={location.pathname}>
-                  <Outlet />
-                </PageTransition>
-              </ErrorBoundary>
-            </main>
+    <LiveContext.Provider value={live}>
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-3 focus:z-[60] focus:rounded-md focus:bg-ink focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-canvas"
+      >
+        Aller au contenu
+      </a>
+      <div className="flex min-h-dvh">
+        <aside className={cn('hidden shrink-0 border-r border-line bg-surface lg:block', collapsed ? 'w-[72px]' : 'w-[248px]')}>
+          <div className="sticky top-0 h-dvh">
+            <Sidebar collapsed={collapsed} onToggleCollapsed={toggleCollapsed} />
           </div>
+        </aside>
+
+        <Dialog.Root open={menuOpen} onOpenChange={setMenuOpen}>
+          <Dialog.Portal>
+            <Dialog.Overlay className="fixed inset-0 z-40 bg-[#1c1613]/45 data-[state=open]:animate-[fade-in_var(--duration-base)_ease-out] lg:hidden" />
+            <Dialog.Content className="fixed inset-y-0 left-0 z-50 w-[min(80vw,280px)] overflow-hidden border-r border-line bg-surface shadow-overlay data-[state=open]:animate-[drawer-in_var(--duration-slow)_var(--ease-out)] lg:hidden">
+              <Dialog.Title className="sr-only">Menu</Dialog.Title>
+              <Dialog.Description className="sr-only">Navigation principale</Dialog.Description>
+              <Sidebar onNavigate={() => setMenuOpen(false)} />
+            </Dialog.Content>
+          </Dialog.Portal>
+        </Dialog.Root>
+
+        <div className="flex min-w-0 flex-1 flex-col">
+          <Topbar onOpenMenu={() => setMenuOpen(true)} onOpenSearch={() => setPaletteOpen(true)} />
+          <main id="main" tabIndex={-1} className="mx-auto w-full max-w-[1280px] flex-1 px-4 pb-12 pt-6 outline-none sm:px-6 lg:px-8">
+            <ErrorBoundary resetKey={location.pathname}>
+              <div key={location.pathname} className="screen-enter"><Outlet /></div>
+            </ErrorBoundary>
+          </main>
         </div>
-        <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
-      </LiveContext.Provider>
-    </MotionConfig>
+      </div>
+      <CommandPalette open={paletteOpen} onOpenChange={setPaletteOpen} />
+    </LiveContext.Provider>
   );
 }

@@ -1,100 +1,63 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 360" role="img" aria-labelledby="title desc">
   <title id="title">TongaPass : les accès de vos équipes, de l’arrivée au départ</title>
-  <desc id="desc">Bannière : logo TongaPass sur fond d’aurore, slogan et carte en verre montrant une arrivée provisionnée étape par étape par n8n.</desc>
+  <desc id="desc">Bannière : logo TongaPass, slogan et exemple d’arrivée provisionnée étape par étape par n8n.</desc>
   <defs>
-    <radialGradient id="a1" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(120 -20) scale(620 360)">
-      <stop offset="0" stop-color="#2dd4bf" stop-opacity=".5"/><stop offset="1" stop-color="#2dd4bf" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="a2" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1180 40) scale(640 380)">
-      <stop offset="0" stop-color="#818cf8" stop-opacity=".5"/><stop offset="1" stop-color="#818cf8" stop-opacity="0"/>
-    </radialGradient>
-    <radialGradient id="a3" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(700 420) scale(560 260)">
-      <stop offset="0" stop-color="#7dd3fc" stop-opacity=".45"/><stop offset="1" stop-color="#7dd3fc" stop-opacity="0"/>
-    </radialGradient>
-    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-      <path d="M40 0H0V40" fill="none" stroke="#0f172a" stroke-opacity=".05"/>
-    </pattern>
-    <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
-    <mask id="gridmask"><rect width="1280" height="360" fill="url(#fade)"/></mask>
-    <linearGradient id="tile" x1="3" y1="1" x2="29" y2="31" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#19c2ad"/><stop offset=".5" stop-color="#0e8a98"/><stop offset="1" stop-color="#5653d4"/></linearGradient>
-    <linearGradient id="gloss" x1="16" y1="1" x2="16" y2="17" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity=".34"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
-    <linearGradient id="door" x1="16" y1="8" x2="16" y2="26" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#fff" stop-opacity=".3"/><stop offset="1" stop-color="#fff" stop-opacity=".04"/></linearGradient>
-    <linearGradient id="word" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#0a6e67"/><stop offset="1" stop-color="#3f49c9"/></linearGradient>
-    <linearGradient id="btn" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0a6e67"/><stop offset=".52" stop-color="#0d6680"/><stop offset="1" stop-color="#4338ca"/></linearGradient>
-    <filter id="shadow" x="-10%" y="-10%" width="120%" height="140%"><feDropShadow dx="0" dy="14" stdDeviation="16" flood-color="#0f172a" flood-opacity=".14"/></filter>
     <symbol id="mark" viewBox="0 0 32 32">
-      <rect x="1" y="1" width="30" height="30" rx="9.5" fill="url(#tile)"/>
-      <rect x="1" y="1" width="30" height="30" rx="9.5" fill="url(#gloss)"/>
-      <path d="M9 25.5V14.5A6.75 6.75 0 0 1 22.5 14.5v11z" fill="url(#door)"/>
-      <path d="M9 25.5V14.5A6.5 6.5 0 0 1 15.2 8" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
-      <path d="M17.6 8.3A6.5 6.5 0 0 1 22.5 14.5v11" fill="none" stroke="#fff" stroke-opacity=".62" stroke-width="2.4" stroke-linecap="round"/>
-      <circle cx="15.8" cy="15.2" r="2.6" fill="#fff"/>
-      <path d="M14.3 17.4h3l1.15 5.8h-5.3z" fill="#fff"/>
+      <rect x="1" y="1" width="30" height="30" rx="7" fill="#77574a"/>
+      <path d="M9 25.5V14.5A6.5 6.5 0 0 1 15.2 8" fill="none" stroke="#f9f2e4" stroke-width="2.4" stroke-linecap="round"/>
+      <path d="M17.6 8.3A6.5 6.5 0 0 1 22.5 14.5v11" fill="none" stroke="#d0ae92" stroke-width="2.4" stroke-linecap="round"/>
+      <circle cx="15.8" cy="15.2" r="2.6" fill="#f9f2e4"/>
+      <path d="M14.3 17.4h3l1.15 5.8h-5.3z" fill="#f9f2e4"/>
     </symbol>
   </defs>
 
-  <!-- Fond d'aurore et trame -->
-  <rect width="1280" height="360" fill="#eef2f7"/>
-  <rect width="1280" height="360" fill="url(#a1)"/>
-  <rect width="1280" height="360" fill="url(#a2)"/>
-  <rect width="1280" height="360" fill="url(#a3)"/>
-  <rect width="1280" height="360" fill="url(#grid)" mask="url(#gridmask)"/>
+  <rect width="1280" height="360" fill="#f9f2e4"/>
+  <rect x="0" y="356" width="1280" height="4" fill="#77574a"/>
 
-  <!-- Logo, slogan -->
   <g font-family="Plus Jakarta Sans, Segoe UI, sans-serif">
-    <use href="#mark" x="80" y="58" width="48" height="48"/>
-    <text x="140" y="92" font-size="26" font-weight="700" letter-spacing="-0.6" fill="#0b1324">Tonga<tspan fill="url(#word)">Pass</tspan></text>
-    <text x="80" y="176" font-size="40" font-weight="800" letter-spacing="-1.4" fill="#0b1324">Les accès de vos équipes,</text>
-    <text x="80" y="224" font-size="40" font-weight="800" letter-spacing="-1.4" fill="url(#word)">de l’arrivée au départ.</text>
-    <text x="80" y="270" font-size="16.5" fill="#2e3a50">Arrivée, mobilité, départ automatisés avec n8n et Keycloak</text>
-    <g font-size="13" font-weight="600" fill="#2e3a50">
-      <rect x="80" y="290" width="92" height="30" rx="15" fill="#fff" fill-opacity=".72" stroke="#0f172a" stroke-opacity=".09"/>
-      <text x="126" y="309.5" text-anchor="middle">Keycloak</text>
-      <rect x="180" y="290" width="60" height="30" rx="15" fill="#fff" fill-opacity=".72" stroke="#0f172a" stroke-opacity=".09"/>
-      <text x="210" y="309.5" text-anchor="middle">n8n</text>
-      <rect x="248" y="290" width="70" height="30" rx="15" fill="#fff" fill-opacity=".72" stroke="#0f172a" stroke-opacity=".09"/>
-      <text x="283" y="309.5" text-anchor="middle">Gitea</text>
-      <rect x="326" y="290" width="108" height="30" rx="15" fill="#fff" fill-opacity=".72" stroke="#0f172a" stroke-opacity=".09"/>
-      <text x="380" y="309.5" text-anchor="middle">Mattermost</text>
-      <rect x="442" y="290" width="150" height="30" rx="15" fill="#fff" fill-opacity=".72" stroke="#0f172a" stroke-opacity=".09"/>
-      <text x="517" y="309.5" text-anchor="middle">Audit SHA-256</text>
-    </g>
+    <use href="#mark" x="80" y="60" width="44" height="44"/>
+    <text x="136" y="91" font-size="25" font-weight="700" fill="#4a3a34">Tonga<tspan fill="#77574a">Pass</tspan></text>
+    <text x="80" y="178" font-size="40" font-weight="700" letter-spacing="-0.6" fill="#4a3a34">Les accès de vos équipes,</text>
+    <text x="80" y="226" font-size="40" font-weight="700" letter-spacing="-0.6" fill="#4a3a34">de l’arrivée au départ.</text>
+    <text x="80" y="270" font-size="16.5" fill="#5e4a41">Arrivées, mobilités et départs automatisés avec n8n et Keycloak</text>
+    <text x="80" y="306" font-size="13.5" fill="#77574a">Keycloak · n8n · Gitea · Mattermost · PostgreSQL · journal d’audit chaîné</text>
   </g>
 
-  <!-- Carte en verre : exécution n8n en cours -->
-  <g transform="translate(724 52)" font-family="Plus Jakarta Sans, Segoe UI, sans-serif" filter="url(#shadow)">
-    <rect width="476" height="256" rx="26" fill="#fff" fill-opacity=".8" stroke="#fff"/>
-    <rect x="24" y="22" width="40" height="40" rx="15" fill="#e3e8fb"/>
-    <text x="44" y="47" text-anchor="middle" font-size="13" font-weight="700" fill="#2b3f8f">HR</text>
-    <text x="78" y="39" font-size="15" font-weight="700" fill="#0b1324">Arrivée de Hanitra Rakoto</text>
-    <text x="78" y="58" font-size="12.5" fill="#475569">Développement back-end · exécution n8n</text>
-    <rect x="378" y="28" width="74" height="26" rx="13" fill="#4338ca" fill-opacity=".1"/>
-    <circle cx="392" cy="41" r="3.5" fill="#4338ca"/>
-    <text x="402" y="45.5" font-size="12" font-weight="700" fill="#4338ca">4 / 6</text>
-    <rect x="24" y="78" width="428" height="6" rx="3" fill="#0f172a" fill-opacity=".06"/>
-    <rect x="24" y="78" width="285" height="6" rx="3" fill="url(#btn)"/>
-
-    <g font-size="13.5" fill="#0b1324">
-      <rect x="24" y="100" width="28" height="28" rx="9" fill="url(#btn)"/>
-      <path d="m31.5 114.5 4 4 8.5-9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-      <text x="64" y="119" font-weight="600">Compte Keycloak créé</text>
-      <text x="452" y="119" text-anchor="end" font-size="12" fill="#475569">0,4 s</text>
-
-      <rect x="24" y="138" width="28" height="28" rx="9" fill="url(#btn)"/>
-      <path d="m31.5 152.5 4 4 8.5-9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-      <text x="64" y="157" font-weight="600">Rôles et groupes attribués</text>
-      <text x="452" y="157" text-anchor="end" font-size="12" fill="#475569">0,7 s</text>
-
-      <rect x="24" y="176" width="28" height="28" rx="9" fill="url(#btn)"/>
-      <path d="m31.5 190.5 4 4 8.5-9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
-      <text x="64" y="195" font-weight="600">Compte Gitea et équipes</text>
-      <text x="452" y="195" text-anchor="end" font-size="12" fill="#475569">1,0 s</text>
-
-      <rect x="16" y="210" width="444" height="36" rx="14" fill="#14b8a6" fill-opacity=".12"/>
-      <rect x="24.75" y="214.75" width="26.5" height="26.5" rx="8.5" fill="#4338ca" fill-opacity=".1" stroke="#4338ca" stroke-opacity=".5" stroke-width="1.5"/>
-      <circle cx="38" cy="228" r="3.5" fill="#4338ca"/>
-      <text x="64" y="232.5" font-weight="600">Invitation Mattermost</text>
-      <text x="452" y="232.5" text-anchor="end" font-size="12" fill="#4338ca" font-weight="600">en cours…</text>
-    </g>
+  <g transform="translate(760 40)" font-family="Plus Jakarta Sans, Segoe UI, sans-serif">
+    <rect width="440" height="280" rx="10" fill="#fffdf9" stroke="#ebdcc8"/>
+    <text x="20" y="32" font-size="14.5" font-weight="600" fill="#4a3a34">Arrivée de Hanitra Rakoto</text>
+    <text x="20" y="50" font-size="12" fill="#77574a">Développement back-end · workflow n8n</text>
+    <rect x="344" y="22" width="76" height="24" rx="12" fill="#4b6b35" fill-opacity=".12"/>
+    <text x="382" y="38.5" font-size="12" font-weight="600" fill="#4b6b35" text-anchor="middle">Terminée</text>
+    <line x1="0" y1="68" x2="440" y2="68" stroke="#ebdcc8"/>
+    <circle cx="30" cy="88" r="9" fill="#77574a"/>
+    <path d="m25.5 88 3 3 6-6" fill="none" stroke="#fffdf9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="52" y="85" font-size="13.5" fill="#4a3a34">Compte Keycloak créé</text>
+    <text x="52" y="101" font-size="11.5" font-family="IBM Plex Mono, Consolas, monospace" fill="#77574a">hanitra.rakoto</text>
+    <text x="416" y="92" font-size="12" fill="#77574a" text-anchor="end">0,4 s</text>
+    <line x1="0" y1="108" x2="440" y2="108" stroke="#ebdcc8"/>
+    <circle cx="30" cy="128" r="9" fill="#77574a"/>
+    <path d="m25.5 128 3 3 6-6" fill="none" stroke="#fffdf9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="52" y="125" font-size="13.5" fill="#4a3a34">Rôles et groupes attribués</text>
+    <text x="52" y="141" font-size="11.5" font-family="IBM Plex Mono, Consolas, monospace" fill="#77574a">employee, developer · Engineering</text>
+    <text x="416" y="132" font-size="12" fill="#77574a" text-anchor="end">0,7 s</text>
+    <line x1="0" y1="148" x2="440" y2="148" stroke="#ebdcc8"/>
+    <circle cx="30" cy="168" r="9" fill="#77574a"/>
+    <path d="m25.5 168 3 3 6-6" fill="none" stroke="#fffdf9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="52" y="165" font-size="13.5" fill="#4a3a34">Lien d’activation envoyé</text>
+    <text x="52" y="181" font-size="11.5" font-family="IBM Plex Mono, Consolas, monospace" fill="#77574a">valable 48 h</text>
+    <text x="416" y="172" font-size="12" fill="#77574a" text-anchor="end">1,0 s</text>
+    <line x1="0" y1="188" x2="440" y2="188" stroke="#ebdcc8"/>
+    <circle cx="30" cy="208" r="9" fill="#77574a"/>
+    <path d="m25.5 208 3 3 6-6" fill="none" stroke="#fffdf9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="52" y="205" font-size="13.5" fill="#4a3a34">Compte Gitea et équipe</text>
+    <text x="52" y="221" font-size="11.5" font-family="IBM Plex Mono, Consolas, monospace" fill="#77574a">developers</text>
+    <text x="416" y="212" font-size="12" fill="#77574a" text-anchor="end">1,3 s</text>
+    <line x1="0" y1="228" x2="440" y2="228" stroke="#ebdcc8"/>
+    <circle cx="30" cy="248" r="9" fill="#77574a"/>
+    <path d="m25.5 248 3 3 6-6" fill="none" stroke="#fffdf9" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <text x="52" y="245" font-size="13.5" fill="#4a3a34">Compte Mattermost et canaux</text>
+    <text x="52" y="261" font-size="11.5" font-family="IBM Plex Mono, Consolas, monospace" fill="#77574a">~engineering, ~bienvenue</text>
+    <text x="416" y="252" font-size="12" fill="#77574a" text-anchor="end">1,6 s</text>
   </g>
 </svg>

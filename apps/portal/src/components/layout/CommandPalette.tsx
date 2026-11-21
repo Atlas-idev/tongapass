@@ -10,9 +10,9 @@ import { EMPLOYEE_STATUS } from '@/lib/labels';
 import { NAV_ITEMS } from './navigation';
 
 const itemClass =
-  'group flex h-10 cursor-pointer items-center gap-3 rounded-xl px-3 text-sm text-ink-2 transition-colors data-[selected=true]:bg-brand-soft data-[selected=true]:text-ink';
+  'group flex h-10 cursor-pointer items-center gap-3 rounded-lg px-3 text-sm text-ink-2 transition-colors data-[selected=true]:bg-brand-soft data-[selected=true]:text-ink';
 const groupClass =
-  '[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pb-1.5 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:tracking-[0.12em] [&_[cmdk-group-heading]]:text-ink-3';
+  '[&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pb-1.5 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:font-semibold [&_[cmdk-group-heading]]:text-ink-3';
 
 /** Palette de commandes (Ctrl/⌘ + K) : navigation, recherche d'employés et actions rapides. */
 export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenChange: (open: boolean) => void }) {
@@ -40,8 +40,8 @@ export function CommandPalette({ open, onOpenChange }: { open: boolean; onOpenCh
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-50 bg-[#060912]/35 backdrop-blur-[6px] data-[state=open]:animate-[fade-in_120ms_ease-out]" />
-        <Dialog.Content className="glass-strong fixed left-1/2 top-[14vh] z-50 w-[calc(100vw-2rem)] max-w-xl -translate-x-1/2 overflow-hidden rounded-[22px] data-[state=open]:animate-[dialog-in_var(--duration-base)_var(--ease-out)]">
+        <Dialog.Overlay className="fixed inset-0 z-50 bg-[#1c1613]/45 data-[state=open]:animate-[fade-in_120ms_ease-out]" />
+        <Dialog.Content className="panel-raised fixed left-1/2 top-[14vh] z-50 w-[calc(100vw-2rem)] max-w-xl -translate-x-1/2 overflow-hidden rounded-xl data-[state=open]:animate-[dialog-in_var(--duration-base)_var(--ease-out)]">
           <Dialog.Title className="sr-only">Palette de commandes</Dialog.Title>
           <Dialog.Description className="sr-only">Recherchez une page, un employé ou une action</Dialog.Description>
           <Command label="Palette de commandes" shouldFilter={!showEmployees} loop>

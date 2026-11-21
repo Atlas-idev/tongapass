@@ -1,6 +1,6 @@
 # Rapport de vérification
 
-Vérifications effectuées du 18 au 21 novembre 2026 sur Windows 11, Docker Desktop, Node.js 24 et Microsoft Edge (Playwright). Dernière campagne complète : 21 novembre 2026, après la refonte « Lagon de verre » (section 5).
+Vérifications effectuées du 18 au 21 novembre 2026 sur Windows 11, Docker Desktop, Node.js 24 et Microsoft Edge (Playwright). La section 6 couvre le portail café crème.
 
 ## 1. Versions réellement exécutées
 
@@ -129,3 +129,16 @@ Problèmes trouvés en relançant ces suites, et corrections :
 | Page de connexion Keycloak : bouton « Montrer le mot de passe » détaché du champ | Le champ gardait ses coins arrondis et sa bordure complète ; le bouton n'avait qu'une bordure partielle | Champ et bouton réunis en un seul bloc (coins arrondis aux extrémités, même bordure, anneau de focus commun) |
 
 Pendant le diagnostic, axe signale un défaut de contraste sur des lignes de l'annuaire et des cartes de profils **s'il est lancé pendant le fondu d'apparition** ; il disparaît avec les animations réduites et après la pause de 400 à 500 ms prévue par les tests. Ce n'est pas un défaut de la palette.
+
+## 6. Portail café crème, 21 novembre 2026
+
+| Vérification | Résultat |
+|---|---|
+| Typage et lint de l’API et du portail, compilation de production | Réussis |
+| Tests unitaires de l’API et du portail | 43 et 12 tests réussis |
+| Tests d’intégration de l’API sur PostgreSQL isolé | 41 tests réussis, dont la pagination de deux exécutions à plusieurs étapes |
+| Recette sur Docker avec Keycloak, n8n, Gitea, Mattermost et Mailpit | Arrivée, mobilité, contrôle des droits, départ et vérification du journal réussis |
+| Audit axe-core | Aucune violation grave ou critique détectée sur l’accueil et sur huit écrans du portail en clair et en sombre |
+| Téléphone de 375 px, animations réduites | Fiche d’exemple navigable au clavier, retour Keycloak vers l’assistant, validation des dates et filtres du tableau de bord vérifiés |
+
+La recette de cycle de vie utilise un employé fictif. Son départ termine le parcours et son historique reste consultable dans la base de démonstration.

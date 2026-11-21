@@ -8,7 +8,7 @@ import { RunTimeline } from '@/components/flow/RunTimeline';
 import { RunStatusBadge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { ErrorState, Panel, Skeleton } from '@/components/ui/Feedback';
-import { ProgressBar } from '@/components/ui/Motion';
+import { ProgressBar } from '@/components/ui/Progress';
 import { useProfiles, useRetryRun, useRun } from '@/hooks/queries';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { useOrigin } from '@/hooks/useOrigin';
@@ -142,7 +142,7 @@ export function RunDetailPage() {
       </div>
 
       {scheduled ? (
-        <div className="flex flex-wrap items-center gap-3 glass rounded-[var(--radius-panel)] px-4 py-3">
+        <div className="flex flex-wrap items-center gap-3 panel rounded-[var(--radius-panel)] px-4 py-3">
           <IconCalendar className="size-4 shrink-0 text-warning" aria-hidden="true" />
           <p className="min-w-0 flex-1 text-sm">
             <span className="font-medium">Exécution planifiée le {formatDateTime(run.scheduledFor)}.</span>{' '}
@@ -169,7 +169,7 @@ export function RunDetailPage() {
         >
           {live ? (
             <div className="mb-4">
-              <ProgressBar value={pct} tone="brand" live label="Progression du workflow" />
+              <ProgressBar value={pct} tone="brand" label="Progression du workflow" />
             </div>
           ) : null}
           <div aria-live="polite">

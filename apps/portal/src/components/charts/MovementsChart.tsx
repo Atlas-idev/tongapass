@@ -43,7 +43,6 @@ export function MovementsChart({ data }: { data: Point[] }) {
   const [view, setView] = useState<'chart' | 'table'>('chart');
   const [hover, setHover] = useState<number | null>(null);
   const titleId = useId();
-  const gradId = useId().replace(/:/g, '');
 
   const max = niceMax(Math.max(1, ...data.flatMap((d) => [d.arrivals, d.departures])));
   const ticks = [0, max / 4, max / 2, (3 * max) / 4, max].filter((t) => Number.isInteger(t));
@@ -69,7 +68,7 @@ export function MovementsChart({ data }: { data: Point[] }) {
               </li>
             ))}
           </ul>
-          <div className="flex rounded-xl border border-line bg-hover p-1" role="group" aria-label="Affichage">
+          <div className="flex rounded-lg border border-line-strong bg-surface p-0.5" role="group" aria-label="Affichage">
             {(['chart', 'table'] as const).map((mode) => (
               <button
                 key={mode}
@@ -77,8 +76,8 @@ export function MovementsChart({ data }: { data: Point[] }) {
                 onClick={() => setView(mode)}
                 aria-pressed={view === mode}
                 className={cn(
-                  'inline-flex h-7 items-center gap-1.5 rounded-lg px-2.5 text-xs font-semibold text-ink-3 transition-colors',
-                  view === mode && 'bg-surface text-ink shadow-[inset_0_1px_0_var(--tp-glass-edge),0_1px_3px_rgb(15_23_42/0.08)]',
+                  'inline-flex h-7 items-center gap-1.5 rounded-md px-2.5 text-xs font-medium text-ink-2 transition-colors hover:bg-hover',
+                  view === mode && 'bg-brand text-on-brand hover:bg-brand',
                 )}
               >
                 {mode === 'chart' ? <IconBars className="size-3.5" aria-hidden="true" /> : <IconTable className="size-3.5" aria-hidden="true" />}
@@ -92,14 +91,6 @@ export function MovementsChart({ data }: { data: Point[] }) {
       {view === 'chart' ? (
         <div className="relative">
           <svg viewBox={`0 0 ${W} ${H}`} className="h-auto w-full overflow-visible" role="group" aria-label="Graphique des arrivées et départs par mois (chaque mois est focalisable)">
-            <defs>
-              {SERIES.map((serie) => (
-                <linearGradient key={serie.key} id={`${gradId}-${serie.key}`} x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0" stopColor={serie.color} />
-                  <stop offset="1" stopColor={serie.color} stopOpacity="0.55" />
-                </linearGradient>
-              ))}
-            </defs>
             {ticks.map((tick) => (
               <g key={tick}>
                 <line x1={PAD.left} x2={W - PAD.right} y1={y(tick)} y2={y(tick)} stroke="var(--tp-line)" strokeWidth={1} strokeDasharray={tick === 0 ? undefined : '3 4'} />
@@ -116,8 +107,8 @@ export function MovementsChart({ data }: { data: Point[] }) {
                   {hover === index ? (
                     <rect x={PAD.left + band * index + 4} y={PAD.top} width={band - 8} height={plotH} rx={10} fill="var(--tp-brand-soft)" />
                   ) : null}
-                  <path d={columnPath(x0, y(point.arrivals), BAR, plotH + PAD.top - y(point.arrivals))} fill={`url(#${gradId}-arrivals)`} />
-                  <path d={columnPath(cx + GAP / 2, y(point.departures), BAR, plotH + PAD.top - y(point.departures))} fill={`url(#${gradId}-departures)`} />
+                  <path d={columnPath(x0, y(point.arrivals), BAR, plotH + PAD.top - y(point.arrivals))} fill={SERIES[0].color} />
+                  <path d={columnPath(cx + GAP / 2, y(point.departures), BAR, plotH + PAD.top - y(point.departures))} fill={SERIES[1].color} />
                   <text x={cx} y={H - 8} textAnchor="middle" className={cn('text-[12px] capitalize', hover === index ? 'fill-ink font-semibold' : 'fill-ink-3')}>
                     {formatMonth(point.month)}
                   </text>
@@ -143,7 +134,7 @@ export function MovementsChart({ data }: { data: Point[] }) {
           </svg>
           {hover !== null && data[hover] ? (
             <div
-              className="glass-strong pointer-events-none absolute top-0 z-10 min-w-36 -translate-x-1/2 rounded-xl px-3 py-2 text-[13px]"
+              className="panel-raised pointer-events-none absolute top-0 z-10 min-w-36 -translate-x-1/2 rounded-lg px-3 py-2 text-[13px]"
               style={{ left: `${((PAD.left + band * hover + band / 2) / W) * 100}%` }}
               role="status"
             >
@@ -161,9 +152,9 @@ export function MovementsChart({ data }: { data: Point[] }) {
           ) : null}
         </div>
       ) : (
-        <div className="overflow-hidden rounded-xl border border-line">
+        <div className="overflow-hidden rounded-lg border border-line">
           <table className="w-full text-sm">
-            <thead className="bg-hover text-left text-[11px] uppercase tracking-[0.08em] text-ink-3">
+            <thead className="bg-sunken text-left text-xs font-medium text-ink-2">
               <tr>
                 <th scope="col" className="px-4 py-2 font-semibold">Mois</th>
                 <th scope="col" className="px-4 py-2 text-right font-semibold">Arrivées</th>

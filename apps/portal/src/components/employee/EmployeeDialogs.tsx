@@ -252,7 +252,7 @@ export function MobilityDialog({ employee, open, onOpenChange, sensitive }: Dial
           </Field>
         </div>
 
-        <section aria-labelledby="mobility-diff-title" className="rounded-2xl border border-line bg-hover/40">
+        <section aria-labelledby="mobility-diff-title" className="rounded-xl border border-line bg-hover/40">
           <header className="flex flex-wrap items-center justify-between gap-2 border-b border-line px-4 py-2.5">
             <h3 id="mobility-diff-title" className="text-[13px] font-semibold">
               Écart de droits

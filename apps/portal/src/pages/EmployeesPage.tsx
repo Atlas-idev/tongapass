@@ -8,7 +8,6 @@ import { EmployeeStatusBadge } from '@/components/ui/Badge';
 import { Button, ButtonLink } from '@/components/ui/Button';
 import { Avatar, EmptyState, ErrorState, PageHeader, Skeleton } from '@/components/ui/Feedback';
 import { Input, Select } from '@/components/ui/Field';
-import { Reveal } from '@/components/ui/Motion';
 import { Segmented } from '@/components/ui/Segmented';
 import { useDepartments, useEmployees, useProfiles } from '@/hooks/queries';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
@@ -22,7 +21,7 @@ type StatusFilter = 'all' | 'active' | 'incoming' | 'leaving' | 'issues' | 'depa
 
 const STATUS_FILTERS: { value: StatusFilter; label: string; statuses: EmployeeStatus[] }[] = [
   { value: 'all', label: 'Tous', statuses: [] },
-  { value: 'active', label: 'Actifs', statuses: ['ACTIVE'] },
+  { value: 'active', label: 'Actifs', statuses: ['ACTIVE', 'OFFBOARDING_SCHEDULED'] },
   { value: 'incoming', label: 'En arrivée', statuses: ['PENDING', 'PROVISIONING'] },
   { value: 'leaving', label: 'En départ', statuses: ['OFFBOARDING_SCHEDULED', 'OFFBOARDING'] },
   { value: 'issues', label: 'À corriger', statuses: ['FAILED'] },
@@ -190,10 +189,10 @@ export function EmployeesPage() {
 
       {error ? <ErrorState error={error} onRetry={() => void refetch()} className="mb-3" /> : null}
 
-      <div className={cn('overflow-hidden glass rounded-[var(--radius-panel)] transition-opacity', isFetching && !isPending && 'opacity-70')}>
+      <div className={cn('overflow-hidden panel rounded-[var(--radius-panel)] transition-opacity', isFetching && !isPending && 'opacity-70')}>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[820px] text-sm">
-            <thead className="border-b border-line bg-hover text-left text-[11px] uppercase tracking-[0.08em] text-ink-3">
+            <thead className="border-b border-line bg-sunken text-left text-xs font-medium text-ink-2">
               <tr>
                 <SortHeader label="Employé" sortKey="lastName" sort={sort} order={order} onSort={onSort} />
                 <th scope="col" className="px-4 py-2.5 font-medium">Poste</th>
@@ -216,7 +215,7 @@ export function EmployeesPage() {
                       ))}
                     </tr>
                   ))
-                : data?.items.map((employee, index) => (
+                : data?.items.map((employee) => (
                     <tr
                       key={employee.id}
                       className="cursor-pointer transition-colors hover:bg-hover"
@@ -226,7 +225,7 @@ export function EmployeesPage() {
                       }}
                     >
                       <td className="px-4 py-2.5">
-                        <Reveal index={index} className="flex items-center gap-2.5">
+                        <div className="flex items-center gap-2.5">
                           <Avatar first={employee.firstName} last={employee.lastName} color={employee.accessProfile.color} />
                           <span className="min-w-0">
                             <Link to={`/employes/${employee.id}`} state={linkState} className="block truncate font-medium text-ink hover:underline">
@@ -236,7 +235,7 @@ export function EmployeesPage() {
                               {employee.username}
                             </span>
                           </span>
-                        </Reveal>
+                        </div>
                       </td>
                       <td className="px-4 py-2.5">
                         <span className="block text-ink">{employee.jobTitle}</span>
@@ -261,7 +260,7 @@ export function EmployeesPage() {
                             <IconMore className="size-4" aria-hidden="true" />
                           </DropdownMenu.Trigger>
                           <DropdownMenu.Portal>
-                            <DropdownMenu.Content align="end" sideOffset={4} className="z-50 w-52 glass-strong rounded-2xl p-1.5">
+                            <DropdownMenu.Content align="end" sideOffset={4} className="z-50 w-52 panel-raised rounded-xl p-1.5">
                               <DropdownMenu.Item className={menuItem} onSelect={() => navigate(`/employes/${employee.id}`, { state: linkState })}>
                                 Ouvrir la fiche
                               </DropdownMenu.Item>

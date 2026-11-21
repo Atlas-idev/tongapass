@@ -13,10 +13,10 @@ import { IconChevronDown } from '@/components/icons';
 import { cn } from '@/lib/cn';
 
 const control =
-  'rounded-xl border border-line-strong bg-surface px-3.5 text-base text-ink placeholder:text-ink-3 sm:text-sm ' +
-  'shadow-[inset_0_1px_0_var(--tp-glass-edge),0_1px_2px_rgb(15_23_42/0.04)] transition-[border-color,box-shadow,background-color] duration-200 hover:border-ink-3/50 ' +
-  'focus:border-brand focus:bg-raised focus:outline-none focus:ring-4 focus:ring-brand/15 ' +
-  'aria-[invalid=true]:border-danger aria-[invalid=true]:focus:ring-danger/15 disabled:bg-sunken disabled:text-ink-3';
+  'rounded-lg border border-line-strong bg-surface px-3 text-base text-ink placeholder:text-ink-3 sm:text-sm ' +
+  'transition-[border-color,box-shadow] duration-150 hover:border-ink-3/60 ' +
+  'focus:border-brand focus:outline-none focus:ring-3 focus:ring-brand/20 ' +
+  'aria-[invalid=true]:border-danger aria-[invalid=true]:focus:ring-danger/20 disabled:bg-sunken disabled:text-ink-3';
 
 /** Largeur pleine par défaut, sauf si l'appelant fixe une largeur (w-40…) : pas de conflit de classes. */
 const fullWidth = (className?: string) => (className && /(^|\s)(\w+:)*w-/.test(className) ? undefined : 'w-full');
@@ -101,7 +101,7 @@ export const ErrorSummary = forwardRef<HTMLDivElement, { items: { name: string; 
         tabIndex={-1}
         role="alert"
         aria-labelledby={`${id}-title`}
-        className="rounded-2xl border border-danger/30 bg-danger-soft px-4 py-3 text-sm outline-none backdrop-blur-md focus-visible:ring-[3px] focus-visible:ring-danger/25"
+        className="rounded-xl border border-danger/30 bg-danger-soft px-4 py-3 text-sm outline-none focus-visible:ring-[3px] focus-visible:ring-danger/25"
       >
         <p id={`${id}-title`} className="font-medium text-danger">
           {items.length === 1 ? '1 champ à corriger' : `${items.length} champs à corriger`}

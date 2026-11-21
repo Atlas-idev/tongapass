@@ -12,7 +12,6 @@ import { ScheduledRunActions } from '@/components/flow/ScheduledRunActions';
 import { ComplianceBadge, EmployeeStatusBadge, RunStatusBadge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { Avatar, DescriptionItem, EmptyState, ErrorState, Panel, Skeleton } from '@/components/ui/Feedback';
-import { Reveal } from '@/components/ui/Motion';
 import { TabPanel, Tabs } from '@/components/ui/Tabs';
 import {
   useCatalog,
@@ -44,7 +43,7 @@ function ScheduledActions({ employee, canManage }: { employee: EmployeeDetail; c
   const scheduled = employee.runs.filter((run) => run.status === 'SCHEDULED');
   if (scheduled.length === 0) return null;
   return (
-    <div className="divide-y divide-line glass rounded-[var(--radius-panel)]">
+    <div className="divide-y divide-line panel rounded-[var(--radius-panel)]">
       {scheduled.map((run) => (
         <div key={run.id} className="flex flex-wrap items-center gap-3 px-4 py-3">
           <IconCalendar className="size-4 shrink-0 text-warning" aria-hidden="true" />
@@ -131,11 +130,11 @@ function HistoryTab({ employeeId }: { employeeId: string }) {
   if (isPending) return <Skeleton className="h-48" />;
   if (!data?.items.length) return <EmptyState title="Aucune action enregistrée" />;
   return (
-    <div className="glass rounded-[var(--radius-panel)]">
+    <div className="panel rounded-[var(--radius-panel)]">
       <ol className="divide-y divide-line">
-        {data.items.map((log, index) => (
+        {data.items.map((log) => (
           <li key={log.id}>
-            <Reveal index={index} className="grid gap-x-4 gap-y-0.5 px-4 py-2.5 text-sm sm:grid-cols-[9rem_minmax(0,1fr)]">
+            <div className="grid gap-x-4 gap-y-0.5 px-4 py-2.5 text-sm sm:grid-cols-[9rem_minmax(0,1fr)]">
               <time dateTime={log.occurredAt} className="text-xs tabular text-ink-3 sm:pt-0.5">
                 {formatDateTime(log.occurredAt)}
               </time>
@@ -146,7 +145,7 @@ function HistoryTab({ employeeId }: { employeeId: string }) {
                 </p>
                 <p className="text-xs text-ink-3">{log.actorName}</p>
               </div>
-            </Reveal>
+            </div>
           </li>
         ))}
       </ol>
@@ -252,7 +251,7 @@ export function EmployeeDetailPage() {
         </span>
       </nav>
 
-      <section className="glass rounded-[var(--radius-panel)]" aria-label="Identité et cycle de vie">
+      <section className="panel rounded-[var(--radius-panel)]" aria-label="Identité et cycle de vie">
         <div className="flex flex-wrap items-start gap-4 p-5">
           <Avatar first={employee.firstName} last={employee.lastName} color={employee.accessProfile.color} size="lg" />
           <div className="min-w-0 flex-1">
@@ -279,11 +278,11 @@ export function EmployeeDetailPage() {
               </Button>
               {canOffboard ? (
                 <DropdownMenu.Root>
-                  <DropdownMenu.Trigger className="inline-flex size-9 items-center justify-center rounded-xl border border-line-strong bg-surface text-ink-2 backdrop-blur-md transition-colors hover:bg-raised" aria-label="Plus d’actions">
+                  <DropdownMenu.Trigger className="inline-flex size-9 items-center justify-center rounded-lg border border-line-strong bg-surface text-ink-2 transition-colors hover:bg-raised" aria-label="Plus d’actions">
                     <IconMore className="size-4" aria-hidden="true" />
                   </DropdownMenu.Trigger>
                   <DropdownMenu.Portal>
-                    <DropdownMenu.Content align="end" sideOffset={4} className="z-50 w-56 glass-strong rounded-2xl p-1.5">
+                    <DropdownMenu.Content align="end" sideOffset={4} className="z-50 w-56 panel-raised rounded-xl p-1.5">
                       <DropdownMenu.Item
                         className={cn(menuItem, 'text-danger data-[highlighted]:bg-danger-soft data-[highlighted]:text-danger')}
                         onSelect={() => setDialog('offboarding')}

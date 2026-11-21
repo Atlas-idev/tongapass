@@ -1,4 +1,3 @@
-import { useReducedMotion } from 'motion/react';
 import { useId } from 'react';
 import { IconAutomation, IconBranch, IconChat, IconKey, IconLayers, IconLedger, IconMail, IconPeople, type IconComponent } from '@/components/icons';
 
@@ -37,55 +36,26 @@ const EDGES = [
 ] as const;
 
 /**
- * Schéma d'architecture animé : des paquets lumineux circulent du portail vers l'API, puis de
- * n8n vers chaque outil, et les rappels signés reviennent vers l'API. Avec les animations
- * réduites, le schéma reste fixe (seuls les tracés sont affichés).
+ * Schéma d'architecture, fixe : le portail appelle l'API, qui déclenche n8n ; n8n agit sur
+ * chaque outil et renvoie des rappels signés (en pointillés) vers l'API.
  */
 export function FlowDiagram() {
-  const reduced = useReducedMotion();
   const uid = useId().replace(/:/g, '');
-  const pathId = (id: string) => `${uid}-${id}`;
   return (
     <svg viewBox="0 0 1000 372" className="h-auto w-full" role="img" aria-labelledby={`${uid}-title`}>
       <title id={`${uid}-title`}>
         Architecture : le portail RH appelle l’API TongaPass, qui déclenche n8n ; n8n crée ou révoque les accès dans Keycloak, Gitea,
         Mattermost et par e-mail, puis renvoie à l’API des rappels signés. L’API journalise tout dans PostgreSQL.
       </title>
-      <defs>
-        <linearGradient id={`${uid}-accent`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="var(--tp-brand)" />
-          <stop offset="1" stopColor="var(--tp-accent)" />
-        </linearGradient>
-        <radialGradient id={`${uid}-glow`}>
-          <stop offset="0" stopColor="var(--tp-brand)" stopOpacity=".9" />
-          <stop offset="1" stopColor="var(--tp-brand)" stopOpacity="0" />
-        </radialGradient>
-      </defs>
 
       {EDGES.map((edge) => (
         <g key={edge.id}>
-          <path id={pathId(edge.id)} d={edge.d} fill="none" stroke="var(--tp-line-strong)" strokeWidth="1.5" />
-          <path
-            d={edge.d}
-            fill="none"
-            stroke={'back' in edge ? 'var(--tp-accent)' : 'var(--tp-brand)'}
-            strokeWidth="1.5"
-            strokeOpacity=".75"
-            className={reduced ? undefined : 'flow-dash'}
-            strokeDasharray={reduced ? '4 6' : undefined}
-          />
+          <path d={edge.d} fill="none" stroke={'back' in edge ? 'var(--tp-accent)' : 'var(--tp-ink-3)'} strokeWidth="1.4" strokeDasharray={'back' in edge ? '5 4' : undefined} />
           {'label' in edge ? (
-            <text x={edge.lx} y={edge.ly} textAnchor="middle" className="fill-ink-3 text-[11px] font-medium">
+            <text x={edge.lx} y={edge.ly} textAnchor="middle" className="fill-ink-3 text-[11px]">
               {edge.label}
             </text>
           ) : null}
-          {reduced ? null : (
-            <circle r="4.5" fill={'back' in edge ? 'var(--tp-accent)' : 'var(--tp-brand)'}>
-              <animateMotion dur={edge.id.startsWith('n8n-') && edge.id !== 'n8n-api' ? '2.2s' : '1.8s'} repeatCount="indefinite" begin={`${(EDGES.indexOf(edge) % 4) * 0.35}s`}>
-                <mpath href={`#${pathId(edge.id)}`} />
-              </animateMotion>
-            </circle>
-          )}
         </g>
       ))}
 
@@ -96,17 +66,16 @@ export function FlowDiagram() {
             y={node.y}
             width={node.w}
             height={node.h}
-            rx="16"
-            fill="var(--tp-raised)"
-            stroke={node.accent ? `url(#${uid}-accent)` : 'var(--tp-line-strong)'}
-            strokeWidth={node.accent ? 1.6 : 1}
+            rx="8"
+            fill={node.accent ? 'var(--tp-sunken)' : 'var(--tp-surface)'}
+            stroke={node.accent ? 'var(--tp-brand)' : 'var(--tp-line-strong)'}
+            strokeWidth="1.2"
           />
-          <rect x={node.x + 14} y={node.y + node.h / 2 - 17} width="34" height="34" rx="11" fill="var(--tp-brand-soft)" />
-          <node.icon x={node.x + 21} y={node.y + node.h / 2 - 10} width="20" height="20" className="text-brand" />
-          <text x={node.x + 60} y={node.y + node.h / 2 - 3} className="fill-ink text-[15px] font-bold">
+          <node.icon x={node.x + 16} y={node.y + node.h / 2 - 10} width="20" height="20" className="text-ink-3" />
+          <text x={node.x + 48} y={node.y + node.h / 2 - 3} className="fill-ink text-[15px] font-semibold">
             {node.title}
           </text>
-          <text x={node.x + 60} y={node.y + node.h / 2 + 15} className="fill-ink-3 text-[11.5px]">
+          <text x={node.x + 48} y={node.y + node.h / 2 + 15} className="fill-ink-3 text-[11.5px]">
             {node.sub}
           </text>
         </g>

@@ -22,7 +22,6 @@ export default defineConfig({
           if (!id.includes('node_modules')) return undefined;
           if (/\/(react|react-dom|react-router|scheduler)\//.test(id)) return 'react';
           if (/\/(@tanstack|keycloak-js)\//.test(id)) return 'data';
-          if (/\/(motion|motion-dom|motion-utils|framer-motion)\//.test(id)) return 'motion';
           return undefined;
         },
       },

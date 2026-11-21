@@ -26,7 +26,7 @@ export const LiveContext = createContext<LiveState>({ connected: false, lastEven
 /**
  * Ouvre le flux SSE de l'API et invalide les données concernées à chaque événement :
  * les étapes d'un workflow s'allument en direct sans rechargement. Les événements sont
- * aussi conservés (30 derniers) pour le fil d'activité et le pouls de la barre supérieure.
+ * aussi conservés (30 derniers) pour le fil d’activité.
  */
 export function useLiveEventsConnection(enabled: boolean): LiveState {
   const client = useQueryClient();

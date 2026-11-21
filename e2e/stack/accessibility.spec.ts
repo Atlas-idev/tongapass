@@ -2,11 +2,12 @@ import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { mkdirSync } from 'node:fs';
 import { env } from './env';
+import { fillPlannedArrival } from '../tests/helpers';
 
 const SHOTS = '../docs/screenshots';
 mkdirSync(SHOTS, { recursive: true });
 
-// Pas de trace pour cet audit : le portail change en continu (horloge, pouls SSE, aurore animée)
+// Pas de trace pour cet audit : le portail reçoit des événements en continu (flux SSE)
 // et la trace enregistrait chaque mutation pendant les analyses axe, ce qui faisait passer une page
 // de 1 s à plus d'une minute et dépasser le délai du test. La liste des violations suffit au diagnostic.
 test.use({ trace: 'off' });
@@ -42,6 +43,48 @@ test('accueil (build de production, CSP active) : aucune violation grave', async
   const serious = results.violations.filter((v) => ['serious', 'critical'].includes(v.impact ?? ''));
   expect(serious.map((v) => `${v.id}: ${v.help}`)).toEqual([]);
   await page.screenshot({ path: `${SHOTS}/accueil.png` });
+});
+
+test('fiche mobile au clavier et connexion depuis un lien vers une arrivée', async ({ page }) => {
+  await page.setViewportSize({ width: 375, height: 812 });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/arrivees/nouvelle');
+  const example = page.getByRole('figure', { name: 'Exemple de fiche d’accès' });
+  await example.getByRole('tab', { name: 'Arrivée' }).focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(example.getByText('Canal ~incidents')).toBeVisible();
+  await page.keyboard.press('ArrowRight');
+  const departure = example.getByRole('tabpanel', { name: 'Départ' });
+  await expect(departure.getByText('Accès révoqués')).toBeVisible();
+  await expect(departure).toHaveCSS('animation-name', 'none');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.getByRole('button', { name: 'Se connecter avec Keycloak' }).click();
+  await page.locator('#username').fill('rh.manager');
+  await page.locator('#password').fill(env.TP_DEMO_PASSWORD);
+  await page.locator('#kc-login').click();
+  await expect(page.getByRole('heading', { name: 'Déclarer une arrivée' })).toBeVisible();
+
+  await fillPlannedArrival(page, 'Soa', 'Rakoto');
+  await page.getByRole('radio', { name: 'Autre date' }).click();
+  await page.getByRole('button', { name: 'Planifier l’arrivée' }).click();
+  await expect(page.getByText('Choisissez la date et l’heure de création des comptes')).toBeVisible();
+  await page.getByLabel('Date et heure').fill('2020-01-01T08:00');
+  await page.getByRole('button', { name: 'Planifier l’arrivée' }).click();
+  await expect(page.getByText(/Choisissez une heure à plus d’une minute/)).toBeVisible();
+  await page.getByRole('radio', { name: 'La veille de l’arrivée' }).click();
+  await page.getByRole('button', { name: 'Retour' }).click();
+  await page.getByLabel('Date d’arrivée').fill('');
+  await page.getByRole('button', { name: 'Continuer' }).click();
+  await expect(page.getByText('Choisissez la date d’arrivée')).toBeVisible();
+
+  await page.getByRole('button', { name: 'Ouvrir le menu' }).click();
+  await page.getByRole('dialog').getByRole('link', { name: 'Vue d’ensemble', exact: true }).click();
+  await page.getByRole('link', { name: /Arrivées planifiées/ }).click();
+  await expect(page.getByRole('radio', { name: 'Arrivées', exact: true })).toBeChecked();
+  await expect(page.getByRole('combobox', { name: 'Statut' })).toHaveValue('SCHEDULED');
+  await page.goto('/');
+  await expect(page.getByRole('heading', { name: 'Agenda des mouvements' })).toBeVisible();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
 for (const theme of ['light', 'dark'] as const) {

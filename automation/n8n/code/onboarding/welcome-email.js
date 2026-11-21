@@ -31,7 +31,7 @@ const rows = [
 const toolsHtml = tools
   .map(
     (t) =>
-      `<p style="margin:0 0 14px;font-size:14px;line-height:1.55"><a href="${escape(t.url)}" style="color:#4338ca;font-weight:600;text-decoration:none">${escape(t.name)}</a><br><span style="color:#475569">${escape(t.hint)}</span></p>`,
+      `<p style="margin:0 0 14px;font-size:14px;line-height:1.55"><a href="${escape(t.url)}" style="color:#3d5c78;font-weight:600;text-decoration:none">${escape(t.name)}</a><br><span style="color:#77574a">${escape(t.hint)}</span></p>`,
   )
   .join('');
 
@@ -42,7 +42,7 @@ const html = emailLayout({
   body: `${emailRows(rows)}
   <div style="font-size:15px;font-weight:600;margin:26px 0 12px">Vos outils</div>
   ${toolsHtml}
-  <p style="margin:20px 0 0;padding:12px 14px;border-left:3px solid #0a6e67;background:#eefaf8;font-size:13px;line-height:1.55;color:#2e3a50">
+  <p style="margin:20px 0 0;padding:12px 14px;border-left:3px solid #77574a;background:#f9f2e4;font-size:13px;line-height:1.55;color:#5e4a41">
     Aucun mot de passe ne vous est transmis par e-mail. Un lien d’activation valable 48 heures a été envoyé à ${escape(employee.workEmail)}.
   </p>`,
 });

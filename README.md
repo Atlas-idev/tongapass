@@ -49,7 +49,7 @@
 
 ## Fonctionnalités
 
-**Portail RH** (React 19, charte « Lagon de verre » : surfaces en verre dépoli, fond d'aurore animé, pictogrammes dessinés pour le produit ; voir la [charte graphique](docs/branding/charte-graphique.md)) :
+**Portail RH** en React 19. L’interface utilise la palette café crème en clair et en sombre. [Charte graphique](docs/branding/charte-graphique.md)
 
 - **Vue d'ensemble** : indicateurs clés, agenda des arrivées, mobilités et départs des 45 prochains jours, exécutions à traiter, fins de contrat sans départ planifié, état de conformité, graphique mensuel accessible (vue tableau).
 - **Assistant d'arrivée en 3 étapes** : identité, poste et profil d'accès, vérification. L'identifiant et l'e-mail professionnel sont générés automatiquement. Les comptes sont créés **la veille de l'arrivée** par défaut (ou tout de suite, ou à une date choisie) ; pour un CDD ou un stage, la révocation est programmée à la fin du contrat. Les droits sensibles sont signalés et les droits supplémentaires doivent être justifiés.
@@ -62,8 +62,8 @@
 - **Profils d'accès** : modèles de droits par poste, composés à partir d'un catalogue fermé (impossible d'y glisser un rôle d'administration).
 - **Journal d'audit** : filtres par action, acteur et période, vérification d'intégrité de la chaîne de hachage en un clic, export CSV.
 - **Intégrations** : état et latence de Keycloak, n8n, Gitea, Mattermost et SMTP.
-- **Temps réel visible** : pouls de la barre supérieure qui bat à chaque signal de n8n, fil d'activité en direct, horloge de travail, exécutions en cours animées.
-- **Navigation moderne** : barre latérale flottante en verre (repliable), barre supérieure flottante, accueil avec schéma d'architecture animé et correspondance avec le livrable P03.
+- **Activité en direct**. La barre supérieure indique si le portail reçoit les événements. Le fil d’activité permet de consulter les dernières opérations.
+- **Navigation**. La barre latérale se replie sur ordinateur et s’ouvre en tiroir sur téléphone. À l’accueil, une fiche d’accès permet de comparer arrivée, mobilité et départ.
 - **Palette de commandes** (Ctrl/⌘ + K), thème clair et sombre, `prefers-reduced-motion` respecté, WCAG 2.2 AA vérifié par axe-core.
 
 **API** (NestJS 12, PostgreSQL 17) : 36 routes documentées en OpenAPI, autorisation par rôles Keycloak, rappels n8n signés en HMAC, idempotence, planificateur (arrivées, mobilités et départs planifiés, relance des exécutions non transmises, chien de garde des exécutions bloquées), contrôle de conformité nocturne, erreurs au format RFC 9457. Les dates (« aujourd'hui », « ce mois-ci ») sont calculées dans le fuseau de l'entreprise (`COMPANY_TIMEZONE`, par défaut `Indian/Antananarivo`).

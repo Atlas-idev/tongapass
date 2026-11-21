@@ -1,4 +1,3 @@
-import { motion, useReducedMotion } from 'motion/react';
 import { cn } from '@/lib/cn';
 import type { EmployeeStatus } from '@/lib/types';
 
@@ -27,7 +26,6 @@ function position(status: EmployeeStatus): { index: number; state: 'done' | 'cur
 
 /** Frise horizontale du cycle de vie de l'employé : où il en est, d'un coup d'œil. */
 export function LifecycleStepper({ status }: { status: EmployeeStatus }) {
-  const reduced = useReducedMotion();
   const { index, state } = position(status);
   const progress = state === 'cancelled' ? 0 : (index / (STAGES.length - 1)) * 100;
   const leaving = index >= 3;
@@ -35,13 +33,8 @@ export function LifecycleStepper({ status }: { status: EmployeeStatus }) {
   return (
     <div className="relative w-full" role="img" aria-label={`Cycle de vie : ${state === 'cancelled' ? 'arrivée annulée' : STAGES[index]}`}>
       {/* Piste entre le premier et le dernier point (centres de colonnes à 10 % et 90 %) */}
-      <div className="absolute left-[10%] right-[10%] top-[6px] h-1 overflow-hidden rounded-full bg-hover" aria-hidden="true">
-        <motion.div
-          className={cn('h-full rounded-full', state === 'error' || leaving ? 'bg-[linear-gradient(90deg,var(--tp-brand),var(--tp-danger))]' : 'bg-gradient-button')}
-          initial={reduced ? false : { width: 0 }}
-          animate={{ width: `${progress}%` }}
-          transition={{ duration: 0.6, ease: [0.2, 0.8, 0.2, 1] }}
-        />
+      <div className="absolute left-[10%] right-[10%] top-[7px] h-0.5 bg-line-strong" aria-hidden="true">
+        <div className={cn('h-full', state === 'error' || leaving ? 'bg-danger' : 'bg-brand')} style={{ width: `${progress}%` }} />
       </div>
       <ol className="relative grid grid-cols-5 text-center">
         {STAGES.map((label, i) => {
@@ -53,19 +46,14 @@ export function LifecycleStepper({ status }: { status: EmployeeStatus }) {
               <span
                 aria-hidden="true"
                 className={cn(
-                  'relative size-4 rounded-full border-[3px] bg-[var(--tp-solid)] transition-colors',
+                  'relative size-4 rounded-full border-[3px] bg-[var(--tp-solid)]',
                   !reached && 'border-line-strong',
                   filled && (i >= 3 || (current && state === 'error') ? 'border-danger' : 'border-brand'),
-                  filled && current && 'shadow-[0_0_0_5px_var(--tp-brand-soft)]',
-                  current && state === 'current' && 'border-info shadow-[0_0_0_5px_var(--tp-info-soft)]',
+                  current && state === 'current' && 'border-info',
                   state === 'cancelled' && i === 0 && 'border-ink-3',
                 )}
-              >
-                {current && state === 'current' ? (
-                  <span className="absolute -inset-1 rounded-full ring-2 ring-info/40" style={{ animation: 'ring-pulse 1.8s var(--ease-out) infinite' }} />
-                ) : null}
-              </span>
-              <span className={cn('text-xs leading-tight', current ? 'font-bold text-ink' : reached ? 'font-medium text-ink-2' : 'text-ink-3')}>
+              />
+              <span className={cn('text-xs leading-tight', current ? 'font-semibold text-ink' : reached ? 'font-medium text-ink-2' : 'text-ink-3')}>
                 {state === 'cancelled' && i === 0 ? 'Annulé' : label}
               </span>
             </li>

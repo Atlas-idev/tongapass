@@ -77,10 +77,10 @@ export function RunsPage() {
 
       {error ? <ErrorState error={error} onRetry={() => void refetch()} className="mb-4" /> : null}
 
-      <div className={cn('overflow-hidden glass rounded-[var(--radius-panel)] transition-opacity', isFetching && !isPending && 'opacity-70')}>
+      <div className={cn('overflow-hidden panel rounded-[var(--radius-panel)] transition-opacity', isFetching && !isPending && 'opacity-70')}>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[860px] text-sm">
-            <thead className="border-b border-line bg-hover text-left text-[11px] uppercase tracking-[0.08em] text-ink-3">
+            <thead className="border-b border-line bg-sunken text-left text-xs font-medium text-ink-2">
               <tr>
                 <th scope="col" className="px-4 py-2.5 font-medium">Employé</th>
                 <th scope="col" className="px-4 py-2.5 font-medium">Type</th>

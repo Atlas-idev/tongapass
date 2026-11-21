@@ -3,7 +3,6 @@ import { useMe } from '@/auth/AuthProvider';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
 import { ErrorState, PageHeader, Skeleton } from '@/components/ui/Feedback';
-import { Reveal } from '@/components/ui/Motion';
 import { useIntegrations } from '@/hooks/queries';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { cn } from '@/lib/cn';
@@ -54,10 +53,10 @@ export function IntegrationsPage() {
           · contrôle automatique toutes les 30 s · dernier {formatRelative(new Date(dataUpdatedAt))}
         </p>
       ) : null}
-      <div className="overflow-hidden glass rounded-[var(--radius-panel)]">
+      <div className="overflow-hidden panel rounded-[var(--radius-panel)]">
         <div className="overflow-x-auto">
           <table className="w-full min-w-[720px] text-sm">
-            <thead className="border-b border-line bg-hover text-left text-[11px] uppercase tracking-[0.08em] text-ink-3">
+            <thead className="border-b border-line bg-sunken text-left text-xs font-medium text-ink-2">
               <tr>
                 <th scope="col" className="px-4 py-2.5 font-medium">Service</th>
                 <th scope="col" className="px-4 py-2.5 font-medium">État</th>
@@ -77,16 +76,16 @@ export function IntegrationsPage() {
                       </td>
                     </tr>
                   ))
-                : data?.map((integration, index) => (
+                : data?.map((integration) => (
                     <tr key={integration.key} className="align-top">
                       <td className="px-4 py-3">
-                        <Reveal index={index}>
+                        <div>
                           <p className="font-medium" translate="no">
                             {integration.name}
                           </p>
                           <p className="text-xs text-ink-3">{integration.role}</p>
                           {integration.error ? <p className="mt-1.5 text-xs text-danger">{integration.error}</p> : null}
-                        </Reveal>
+                        </div>
                       </td>
                       <td className="px-4 py-3">
                         <Badge tone={STATE[integration.state].tone}>{STATE[integration.state].label}</Badge>

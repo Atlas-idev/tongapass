@@ -121,7 +121,7 @@ export const AUDIT_ACTION_LABEL: Record<string, string> = {
   'audit.exported': 'Journal exporté',
 };
 
-/** Pastilles de statut : verre teinté, texte de la couleur d'état, liseré fin. */
+/** Pastilles de statut : fond teinté, texte de la couleur d'état, liseré fin. */
 export const TONE_CLASSES: Record<Tone, string> = {
   neutral: 'bg-hover text-ink-2 ring-line-strong',
   brand: 'bg-brand-soft text-brand ring-brand/25',

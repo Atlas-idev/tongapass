@@ -1,10 +1,10 @@
 import type { ReactNode, SVGProps } from 'react';
 
 /**
- * Pictogrammes TongaPass « verre » : dessinés pour le produit sur une grille de 24 px.
- * Trait arrondi de 1,75 px et un aplat translucide (16 %) dans la couleur du texte,
- * qui rappelle les surfaces en verre dépoli de l'interface. Aucun pictogramme de banque
- * d'icônes : chaque forme dit quelque chose du métier (registre chaîné, badge, seuil…).
+ * Pictogrammes TongaPass : dessinés pour le produit sur une grille de 24 px.
+ * Trait arrondi de 1,75 px et un léger aplat (16 %) dans la couleur du texte.
+ * Aucun pictogramme de banque d'icônes : chaque forme dit quelque chose du métier
+ * (registre chaîné, badge, seuil…).
  *
  * Les icônes sont décoratives par défaut (aria-hidden) : le libellé vient du texte voisin.
  */
@@ -14,7 +14,7 @@ export interface IconProps extends SVGProps<SVGSVGElement> {
 
 export type IconComponent = ((props: IconProps) => ReactNode) & { displayName?: string };
 
-/** Aplat « verre » : remplissage translucide de la couleur courante, sans contour. */
+/** Aplat : remplissage léger de la couleur courante, sans contour. */
 const G = { fill: 'currentColor', fillOpacity: 0.16, stroke: 'none' } as const;
 /** Point plein (i, points de suspension) */
 const D = { fill: 'currentColor', stroke: 'none' } as const;
@@ -68,7 +68,7 @@ export const IconPeople = icon(
   </>,
 );
 
-/** Nouvelle arrivée : silhouette et badge « + » en verre. */
+/** Nouvelle arrivée : silhouette et badge « + ». */
 export const IconArrival = icon(
   'IconArrival',
   <>

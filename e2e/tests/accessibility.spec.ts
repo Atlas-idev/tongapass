@@ -79,10 +79,15 @@ test.describe('Accessibilité (axe-core, WCAG 2.2 A/AA) et captures', () => {
     const context = await browser.newContext({ reducedMotion: 'reduce' });
     const page = await context.newPage();
     await page.goto('/');
-    // L'aperçu animé de l'accueil s'affiche directement dans son état final, sans séquence
-    const preview = page.getByRole('figure', { name: /provisionnement automatique/ });
-    await expect(preview).toBeVisible();
-    await expect(preview.getByText('Terminée', { exact: true })).toBeVisible({ timeout: 1_000 });
+    const preview = page.getByRole('figure', { name: 'Exemple de fiche d’accès' });
+    await expect(preview.getByText('Accès ouverts')).toBeVisible();
+    await preview.getByRole('tab', { name: 'Arrivée' }).focus();
+    await page.keyboard.press('ArrowRight');
+    await expect(preview.getByText('Profil modifié')).toBeVisible();
+    await page.keyboard.press('ArrowRight');
+    const departure = preview.getByRole('tabpanel', { name: 'Départ' });
+    await expect(departure.getByText('Accès révoqués')).toBeVisible();
+    await expect(departure).toHaveCSS('animation-name', 'none');
     await context.close();
   });
 });

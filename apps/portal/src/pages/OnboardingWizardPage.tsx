@@ -1,5 +1,4 @@
 import { IconAlert, IconArrowLeft, IconArrowRight, IconCalendar, IconCheck, IconHistory } from '@/components/icons';
-import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
@@ -17,7 +16,6 @@ import { cn } from '@/lib/cn';
 import { clearDraft, loadDraft, saveDraft } from '@/lib/draft';
 import { formatDate, formatDateTime, todayIso } from '@/lib/format';
 import { CONTRACT_LABEL } from '@/lib/labels';
-import { DURATION, EASE_OUT } from '@/lib/motion';
 import type { ContractType, OnboardingPreview } from '@/lib/types';
 import { NoAccess } from './StatusScreens';
 
@@ -53,7 +51,7 @@ const INITIAL: FormState = {
   department: '',
   location: 'Antananarivo',
   contractType: 'CDI',
-  startDate: todayIso(),
+  startDate: '',
   endDate: '',
   managerName: '',
   managerEmail: '',
@@ -112,9 +110,9 @@ function eveOf(startDate: string): Date {
 }
 
 function resolveProvisionAt(form: FormState, timing: Timing): string | undefined {
-  if (timing === 'eve') return eveOf(form.startDate).toISOString();
-  if (timing === 'custom' && form.provisionAt) return new Date(form.provisionAt).toISOString();
-  return undefined;
+  if (timing === 'now') return undefined;
+  const date = timing === 'eve' ? eveOf(form.startDate) : new Date(form.provisionAt);
+  return Number.isFinite(date.getTime()) ? date.toISOString() : undefined;
 }
 
 function validate(step: number, form: FormState, timing: Timing): Errors {
@@ -143,7 +141,11 @@ function validate(step: number, form: FormState, timing: Timing): Errors {
   if (step === 2 && timing === 'custom') {
     const at = Date.parse(form.provisionAt);
     if (!form.provisionAt || Number.isNaN(at)) errors.provisionAt = 'Choisissez la date et l’heure de création des comptes';
-    else if (at > Date.parse(`${form.startDate}T00:00`) + 2 * DAY) errors.provisionAt = 'Au plus tard deux jours après l’arrivée';
+    else if (at <= Date.now() + 60_000) errors.provisionAt = 'Choisissez une heure à plus d’une minute ou sélectionnez « Maintenant ».';
+    else if (at > Date.parse(`${form.startDate}T00:00:00Z`) + 2 * DAY) errors.provisionAt = 'Au plus tard deux jours après l’arrivée';
+  }
+  if (step === 2 && timing === 'eve' && eveOf(form.startDate).getTime() <= Date.now() + 60_000) {
+    errors.provisionAt = 'La veille de l’arrivée est passée. Choisissez un autre moment.';
   }
   return errors;
 }
@@ -159,11 +161,11 @@ function Stepper({ current }: { current: number }) {
             <span className="flex items-center gap-2">
               <span
                 className={cn(
-                  'flex size-8 shrink-0 items-center justify-center rounded-[11px] text-xs font-bold tabular transition-all duration-300',
+                  'flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-semibold tabular',
                   done
-                    ? 'bg-gradient-button text-on-brand shadow-[0_6px_14px_-6px_var(--tp-brand)]'
+                    ? 'bg-brand text-on-brand'
                     : active
-                      ? 'border-2 border-brand bg-brand-soft text-brand shadow-[0_0_0_4px_var(--tp-brand-soft)]'
+                      ? 'border-2 border-brand bg-surface text-brand'
                       : 'border border-line-strong bg-surface text-ink-3',
                 )}
               >
@@ -172,14 +174,7 @@ function Stepper({ current }: { current: number }) {
               <span className={cn('text-[13px] font-semibold', active ? 'text-ink' : done ? 'text-ink-2' : 'text-ink-3', !active && 'sr-only sm:not-sr-only')}>{label}</span>
             </span>
             {index < STEPS.length - 1 ? (
-              <span className="relative h-1 flex-1 overflow-hidden rounded-full bg-hover" aria-hidden="true">
-                <motion.span
-                  className="bg-gradient-button absolute inset-0 origin-left rounded-full"
-                  initial={false}
-                  animate={{ scaleX: done ? 1 : 0 }}
-                  transition={{ duration: DURATION.slow, ease: EASE_OUT }}
-                />
-              </span>
+              <span className={cn('h-px flex-1', done ? 'bg-brand' : 'bg-line-strong')} aria-hidden="true" />
             ) : null}
           </li>
         );
@@ -192,7 +187,6 @@ export function OnboardingWizardPage() {
   useDocumentTitle('Nouvelle arrivée');
   const me = useMe();
   const navigate = useNavigate();
-  const reduced = useReducedMotion();
   const profiles = useProfiles();
   const catalog = useCatalog();
   const departments = useDepartments();
@@ -201,14 +195,15 @@ export function OnboardingWizardPage() {
   // Brouillon de l'onglet : reprise après navigation, rechargement ou reconnexion.
   // L'étape de vérification dépend d'un aperçu calculé par l'API : on reprend au plus à l'étape 2.
   const [restored, setRestored] = useState(() => loadDraft<FormState>(DRAFT));
-  const [step, setStep] = useState(() => Math.min(restored?.step ?? 0, 1));
-  const [form, setForm] = useState<FormState>(() => (restored ? { ...INITIAL, ...restored.data } : INITIAL));
+  const [initial] = useState<FormState>(() => ({ ...INITIAL, startDate: todayIso() }));
+  const [step, setStep] = useState(() => restored?.step && restored.step >= 1 ? 1 : 0);
+  const [form, setForm] = useState<FormState>(() => ({ ...initial, ...restored?.data }));
   const [errors, setErrors] = useState<Errors>({});
   const [showSummary, setShowSummary] = useState(false);
   const idempotencyKey = useRef(crypto.randomUUID());
   const formRef = useRef<HTMLFormElement>(null);
   const summaryRef = useRef<HTMLDivElement>(null);
-  const dirty = JSON.stringify(form) !== JSON.stringify(INITIAL);
+  const dirty = JSON.stringify(form) !== JSON.stringify(initial);
   // Instant de référence figé à l'ouverture de l'assistant (rendu pur).
   const [openedAt] = useState(() => Date.now());
 
@@ -234,7 +229,7 @@ export function OnboardingWizardPage() {
 
   // La veille n'a de sens que si elle est encore à venir.
   const eveAvailable = eveOf(form.startDate).getTime() > openedAt + 60_000;
-  const timing: Timing = form.timing ?? (eveAvailable ? 'eve' : 'now');
+  const timing: Timing = form.timing === 'custom' || form.timing === 'now' ? form.timing : eveAvailable ? 'eve' : 'now';
   const provisionAt = resolveProvisionAt(form, timing);
   const hasEnd = Boolean(form.endDate);
 
@@ -272,7 +267,7 @@ export function OnboardingWizardPage() {
   const restart = () => {
     clearDraft(DRAFT);
     setRestored(null);
-    setForm(INITIAL);
+    setForm(initial);
     setErrors({});
     setShowSummary(false);
     setStep(0);
@@ -301,7 +296,7 @@ export function OnboardingWizardPage() {
       }
     }
     goToStep(Math.min(step + 1, STEPS.length - 1));
-    window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' });
+    window.scrollTo({ top: 0 });
   };
 
   const submit = async (event: FormEvent) => {
@@ -364,14 +359,6 @@ export function OnboardingWizardPage() {
   };
 
   const data: OnboardingPreview | undefined = preview.data;
-  // Entrée 200 ms depuis la droite (étape suivante), sortie 130 ms vers la gauche
-  const motionProps = reduced
-    ? {}
-    : {
-        initial: { opacity: 0, x: 12 },
-        animate: { opacity: 1, x: 0, transition: { duration: DURATION.base, ease: EASE_OUT } },
-        exit: { opacity: 0, x: -12, transition: { duration: DURATION.fast, ease: 'easeIn' as const } },
-      };
   const summaryItems = showSummary ? errorItems(errors) : [];
 
   return (
@@ -380,7 +367,7 @@ export function OnboardingWizardPage() {
       <Stepper current={step} />
 
       {restored ? (
-        <div className="mb-5 flex flex-wrap items-center gap-x-3 gap-y-2 glass rounded-[var(--radius-panel)] px-4 py-2.5 text-[13px]" role="status">
+        <div className="mb-5 flex flex-wrap items-center gap-x-3 gap-y-2 panel rounded-[var(--radius-panel)] px-4 py-2.5 text-[13px]" role="status">
           <IconHistory className="size-4 shrink-0 text-ink-3" aria-hidden="true" />
           <p className="min-w-0 flex-1 text-ink-2">
             Saisie reprise là où vous l’aviez laissée (brouillon de {timeOf(restored.savedAt)}).
@@ -396,8 +383,7 @@ export function OnboardingWizardPage() {
           <ErrorSummary ref={summaryRef} items={summaryItems} onSelect={focusField} />
         ) : null}
         {step < 2 ? <p className={cn('mb-4 text-[13px] text-ink-3', summaryItems.length && 'mt-4')}>Tous les champs sont obligatoires, sauf mention « facultatif ».</p> : null}
-        <AnimatePresence mode="wait" initial={false}>
-          <motion.div key={step} className="space-y-5" {...motionProps}>
+        <div key={step} className="step-enter space-y-5">
             {step === 0 ? (
               <Panel title="Identité" description="Sert à générer l’identifiant et l’adresse professionnelle." id="identity">
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -492,9 +478,9 @@ export function OnboardingWizardPage() {
                             <label
                               key={profile.id}
                               className={cn(
-                                'relative flex cursor-pointer flex-col gap-1.5 rounded-2xl border p-4 transition-[border-color,box-shadow,background-color,transform] duration-200 hover:-translate-y-0.5',
+                                'relative flex cursor-pointer flex-col gap-1.5 rounded-lg border p-4 transition-colors duration-150',
                                 'has-[:focus-visible]:ring-[3px] has-[:focus-visible]:ring-info/25',
-                                selected ? 'border-brand bg-brand-soft shadow-[inset_0_0_0_1px_var(--tp-brand),0_10px_24px_-14px_var(--tp-brand)]' : 'border-line bg-surface hover:border-line-strong',
+                                selected ? 'border-brand bg-brand-soft shadow-[inset_0_0_0_1px_var(--tp-brand)]' : 'border-line bg-surface hover:border-line-strong',
                               )}
                             >
                               <input
@@ -534,7 +520,7 @@ export function OnboardingWizardPage() {
                   )}
 
                   {selectedProfile && extraCandidates.length ? (
-                    <details className="group mt-4 rounded-2xl border border-line bg-hover/40" open={form.extraRealmRoles.length > 0}>
+                    <details className="group mt-4 rounded-xl border border-line bg-hover/40" open={form.extraRealmRoles.length > 0}>
                       <summary className="flex cursor-pointer list-none items-center justify-between px-3.5 py-2.5 text-[13px] font-medium">
                         Droits supplémentaires (exception)
                         <span className="text-xs font-normal text-ink-3 group-open:hidden">Afficher</span>
@@ -622,6 +608,7 @@ export function OnboardingWizardPage() {
                           { value: 'custom', label: 'Autre date' },
                         ]}
                       />
+                      {timing === 'eve' && errors.provisionAt ? <p role="alert" className="mt-2 text-sm text-danger">{errors.provisionAt}</p> : null}
                     </div>
                     {timing === 'custom' ? (
                       <Field label="Date et heure" error={errors.provisionAt} className="max-w-xs">
@@ -632,7 +619,7 @@ export function OnboardingWizardPage() {
                       <IconCalendar className="size-4 text-ink-3" aria-hidden="true" />
                       {provisionAt
                         ? `Comptes créés le ${formatDateTime(provisionAt)}. Rien n’est accessible avant cette date.`
-                        : 'Comptes créés dès la validation.'}
+                        : timing === 'custom' ? 'Choisissez la date et l’heure de création.' : 'Comptes créés dès la validation.'}
                     </p>
                     {hasEnd ? (
                       <Checkbox
@@ -649,7 +636,7 @@ export function OnboardingWizardPage() {
                 <Panel title="Étapes exécutées par n8n" id="review-steps">
                   <ol className="grid gap-1.5 sm:grid-cols-2">
                     {data.steps.map((s, index) => (
-                      <li key={s.key} className="flex items-center gap-2.5 rounded-xl border border-line bg-surface px-3 py-2.5 text-[13px]">
+                      <li key={s.key} className="flex items-center gap-2.5 rounded-lg border border-line bg-surface px-3 py-2.5 text-[13px]">
                         <SystemIcon system={s.system} className="size-4 text-brand" />
                         <span className="flex-1">
                           <span className="tabular text-ink-3">{index + 1}.</span> {s.label}
@@ -665,10 +652,9 @@ export function OnboardingWizardPage() {
                 </Panel>
               </>
             ) : null}
-          </motion.div>
-        </AnimatePresence>
+        </div>
 
-        <div className="glass sticky bottom-3 z-10 mt-6 flex items-center justify-between gap-3 rounded-2xl px-3 py-3">
+        <div className="panel sticky bottom-3 z-10 mt-6 flex items-center justify-between gap-3 rounded-xl px-3 py-3 shadow-overlay">
           {step > 0 ? (
             <Button onClick={() => goToStep(step - 1)} icon={<IconArrowLeft className="size-4" aria-hidden="true" />}>
               Retour
@@ -683,7 +669,7 @@ export function OnboardingWizardPage() {
             </Button>
           ) : (
             <Button variant="primary" size="lg" type="submit" loading={create.isPending}>
-              {provisionAt ? 'Planifier l’arrivée' : 'Créer les comptes'}
+              {timing === 'now' ? 'Créer les comptes' : 'Planifier l’arrivée'}
             </Button>
           )}
         </div>

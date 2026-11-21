@@ -7,23 +7,16 @@ export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'dang
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
 const base =
-  'group/button relative isolate inline-flex select-none items-center justify-center gap-1.5 overflow-hidden whitespace-nowrap rounded-xl font-semibold ' +
-  'transition-[background-color,border-color,color,box-shadow,transform,filter] duration-200 ease-out active:scale-[0.97] ' +
+  'inline-flex select-none items-center justify-center gap-1.5 whitespace-nowrap rounded-lg font-semibold ' +
+  'transition-[background-color,border-color,color] duration-150 ease-out ' +
   'disabled:pointer-events-none disabled:opacity-50';
 
-/*
- * Bouton principal : dégradé lagon → indigo (texte ≥ 4,5:1 sur toute sa longueur), reflet
- * de verre en haut et balayage lumineux au survol. Les autres variantes sont en verre.
- */
+/* Bouton principal : cacao plein, texte ivoire (6,4:1), expresso au survol. */
 const variants: Record<ButtonVariant, string> = {
-  primary:
-    'bg-gradient-button text-on-brand shadow-[0_1px_0_rgb(255_255_255/0.25)_inset,0_8px_20px_-8px_color-mix(in_oklab,var(--tp-brand)_70%,transparent)] ' +
-    'hover:shadow-[0_1px_0_rgb(255_255_255/0.3)_inset,0_12px_26px_-8px_color-mix(in_oklab,var(--tp-accent)_60%,transparent)] hover:brightness-[1.06] ' +
-    "before:pointer-events-none before:absolute before:inset-0 before:-z-10 before:-translate-x-full before:bg-[linear-gradient(110deg,transparent_25%,rgb(255_255_255/0.28)_50%,transparent_75%)] before:transition-transform before:duration-700 before:content-[''] hover:before:translate-x-full",
-  secondary:
-    'border border-line-strong bg-surface text-ink shadow-[inset_0_1px_0_var(--tp-glass-edge),0_1px_2px_rgb(15_23_42/0.05)] backdrop-blur-md hover:border-ink-3/40 hover:bg-raised',
+  primary: 'bg-brand text-on-brand hover:bg-brand-strong',
+  secondary: 'border border-line-strong bg-surface text-ink hover:bg-hover',
   ghost: 'text-ink-2 hover:bg-hover hover:text-ink',
-  danger: 'bg-danger text-white shadow-[0_8px_20px_-10px_var(--tp-danger)] hover:bg-danger-strong dark:text-[#2a0710]',
+  danger: 'bg-danger text-white hover:bg-danger-strong dark:text-[#2a211d]',
   'danger-ghost': 'text-danger hover:bg-danger-soft',
 };
 
@@ -87,7 +80,7 @@ export function IconButton({
       aria-label={label}
       title={label}
       className={cn(
-        'inline-flex size-9 items-center justify-center rounded-xl text-ink-3 transition-[background-color,color,transform] duration-200 hover:bg-hover hover:text-ink active:scale-95',
+        'inline-flex size-9 items-center justify-center rounded-lg text-ink-3 transition-[background-color,color] duration-150 hover:bg-hover hover:text-ink',
         className,
       )}
       {...props}

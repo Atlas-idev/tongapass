@@ -91,9 +91,9 @@ Le workflow n8n de mobilité n'applique **que** cet écart. Et la fiche de l'emp
 
 Même avec une automatisation parfaite, quelqu'un finira par ajouter un rôle « temporaire » à la main dans la console Keycloak. Chaque nuit, TongaPass relit les droits réels avec un **second compte de service en lecture seule** et les compare au profil attendu. Un rôle en trop, un compte d'ancien salarié encore actif : l'écart apparaît sur la vue d'ensemble et dans la page Conformité. Celui qui contrôle ne peut rien modifier, c'est la séparation des tâches appliquée à l'outillage.
 
-## 8. Une interface moderne qui montre le temps réel
+## 8. Suivre un changement de droits
 
-Pour un outil d'IAM, la confiance passe par la clarté. L'interface suit une charte « Lagon de verre » : des surfaces en verre dépoli sur un fond d'aurore qui dérive lentement, une marque lagon et indigo, et des couleurs d'état qui portent toujours un sens (lagon pour un accès accordé, corail pour une révocation, ambre pour ce qui est planifié). Les pictogrammes ont été dessinés pour le produit : le journal d'audit est une pile de blocs chaînés, l'intégrité deux maillons. Le direct se voit : un **pouls** dans la barre supérieure bat à chaque signal reçu de n8n, un **fil d'activité** affiche les événements à leur arrivée, et les étapes se valident sous les yeux de l'équipe RH. Les animations respectent `prefers-reduced-motion`, les contrastes sont calculés sur le verre dans le pire cas, et l'accessibilité est vérifiée automatiquement avec axe-core (WCAG 2.2 AA) en thème clair et sombre.
+Une arrivée passe par plusieurs outils. Sur la fiche d’exécution, l’équipe RH peut voir que le compte Keycloak existe déjà alors que l’invitation Mattermost est encore en attente. Chaque rappel de n8n met à jour la ligne correspondante et le fil d’activité. Si le portail perd la connexion aux événements, la barre supérieure l’indique. Les états ont un libellé dans les deux thèmes.
 
 ## 9. Tester sans tout démarrer
 

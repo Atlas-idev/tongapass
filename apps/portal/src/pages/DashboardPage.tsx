@@ -1,5 +1,4 @@
-import { IconAlert, IconArrival, IconBars, IconArrowRight, IconCalendar, IconChevronRight, IconClock, IconEnter, IconExit, IconFlow, IconPeople, IconShieldAlert, IconShieldCheck, IconSwap, type IconComponent } from '@/components/icons';
-import { motion, useReducedMotion } from 'motion/react';
+import { IconAlert, IconArrival, IconBars, IconCalendar, IconChevronRight, IconClock, IconEnter, IconExit, IconFlow, IconShieldCheck, IconSwap } from '@/components/icons';
 import type { ReactNode } from 'react';
 import { Link } from 'react-router';
 import { useMe } from '@/auth/AuthProvider';
@@ -8,15 +7,12 @@ import { StepSegments } from '@/components/flow/RunTimeline';
 import { Badge, EmployeeStatusBadge, RunStatusBadge } from '@/components/ui/Badge';
 import { ButtonLink } from '@/components/ui/Button';
 import { EmptyState, ErrorState, PageHeader, Panel, Skeleton } from '@/components/ui/Feedback';
-import { CountUp, Reveal } from '@/components/ui/Motion';
 import { useDashboard } from '@/hooks/queries';
 import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 import { useOriginState } from '@/hooks/useOrigin';
 import { cn } from '@/lib/cn';
-import { trackSpotlight } from '@/lib/spotlight';
 import { formatDate, formatDateLong, formatDuration, formatRelative, formatTime } from '@/lib/format';
 import { CONTRACT_LABEL, RUN_TYPE } from '@/lib/labels';
-import { EASE_OUT } from '@/lib/motion';
 import type { AgendaItem, DashboardSummary, EmployeeStatus } from '@/lib/types';
 
 const capitalize = (text: string) => text.charAt(0).toUpperCase() + text.slice(1);
@@ -27,12 +23,6 @@ const KIND = {
   DEPARTURE: { label: 'Départ', icon: IconExit, className: 'text-danger' },
 } as const;
 
-/** Salutation selon l'heure locale. */
-function greeting(): string {
-  const hour = new Date().getHours();
-  return hour >= 18 || hour < 4 ? 'Bonsoir' : 'Bonjour';
-}
-
 function dayLabel(date: Date): string {
   const today = new Date();
   const startOf = (d: Date) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime();
@@ -42,32 +32,23 @@ function dayLabel(date: Date): string {
   return capitalize(formatDateLong(date));
 }
 
-/** Indicateur clé : carte de verre cliquable, pictogramme, valeur qui s'incrémente, halo au survol. */
-function Kpi({ label, value, hint, icon: Icon, to, tone }: { label: string; value: ReactNode; hint: string; icon: IconComponent; to?: string; tone: string }) {
+/** Indicateur clé : libellé, valeur et précision ; toute la case mène à la liste correspondante. */
+function Kpi({ label, value, hint, to }: { label: string; value: ReactNode; hint: string; to?: string }) {
   const body = (
     <>
-      <div className="flex items-start justify-between gap-2">
-        <span className={cn('flex size-10 items-center justify-center rounded-xl bg-hover transition-transform duration-300 group-hover:scale-110', tone)}>
-          <Icon className="size-5" />
-        </span>
-        {to ? <IconArrowRight className="size-4 -translate-x-1 text-ink-3 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100" /> : null}
-      </div>
-      <p className="mt-4 text-[28px] font-extrabold leading-none tracking-[-0.03em] text-ink">{value}</p>
-      <p className="mt-1.5 text-[13px] font-semibold text-ink-2">{label}</p>
+      <p className="text-[13px] text-ink-3">{label}</p>
+      <p className="mt-1 text-2xl font-semibold tabular text-ink">{value}</p>
       <p className="mt-0.5 text-xs text-ink-3">{hint}</p>
     </>
   );
-  const className = 'glass spotlight group flex h-full flex-col rounded-[var(--radius-panel)] p-4 transition-transform duration-300 hover:-translate-y-0.5';
   return (
-    <li className="min-w-0">
+    <li className="min-w-0 bg-surface">
       {to ? (
-        <Link to={to} className={className} onPointerMove={trackSpotlight}>
+        <Link to={to} className="block h-full px-4 py-3.5 transition-colors hover:bg-hover">
           {body}
         </Link>
       ) : (
-        <div className={className} onPointerMove={trackSpotlight}>
-          {body}
-        </div>
+        <div className="h-full px-4 py-3.5">{body}</div>
       )}
     </li>
   );
@@ -75,56 +56,37 @@ function Kpi({ label, value, hint, icon: Icon, to, tone }: { label: string; valu
 
 function Kpis({ kpis }: { kpis: DashboardSummary['kpis'] }) {
   return (
-    <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6" aria-label="Indicateurs clés">
-      <Kpi label="Employés actifs" value={<CountUp value={kpis.activeEmployees} />} hint="Accès ouverts et conformes au profil" icon={IconPeople} to="/employes?statut=active" tone="text-brand" />
+    <ul
+      className="grid grid-cols-2 gap-px overflow-hidden rounded-[var(--radius-panel)] border border-line bg-line sm:grid-cols-3 xl:grid-cols-6"
+      aria-label="Indicateurs clés"
+    >
+      <Kpi label="Employés actifs" value={kpis.activeEmployees} hint="Départs planifiés inclus" to="/employes?statut=active" />
       <Kpi
         label="Exécutions en cours"
-        value={<CountUp value={kpis.runsInProgress} />}
+        value={kpis.runsInProgress}
         hint={kpis.runsInProgress ? 'Suivies en direct' : 'Aucun workflow actif'}
-        icon={IconFlow}
         to="/executions?status=QUEUED,RUNNING"
-        tone="text-info"
       />
-      <Kpi label="Arrivées planifiées" value={<CountUp value={kpis.scheduledArrivals} />} hint="Comptes créés la veille" icon={IconEnter} to="/employes?statut=incoming" tone="text-success" />
-      <Kpi label="Départs planifiés" value={<CountUp value={kpis.scheduledDepartures} />} hint="Révocation programmée" icon={IconExit} to="/employes?statut=leaving" tone="text-warning" />
-      <Kpi label="Accès révoqués" value={<CountUp value={kpis.revokedThisMonth} />} hint="Ce mois-ci" icon={IconShieldAlert} to="/executions?type=OFFBOARDING" tone="text-danger" />
-      <Kpi label="Délai de création" value={<span className="tabular">{formatDuration(kpis.avgProvisioningSeconds)}</span>} hint="Moyenne, de la demande aux accès" icon={IconClock} tone="text-accent" />
+      <Kpi label="Arrivées planifiées" value={kpis.scheduledArrivals} hint="Création programmée" to="/executions?type=ONBOARDING&status=SCHEDULED" />
+      <Kpi label="Départs planifiés" value={kpis.scheduledDepartures} hint="Révocation programmée" to="/executions?type=OFFBOARDING&status=SCHEDULED" />
+      <Kpi label="Départs traités" value={kpis.revokedThisMonth} hint="Ce mois-ci" />
+      <Kpi label="Délai de création" value={formatDuration(kpis.avgProvisioningSeconds)} hint="De la demande aux accès" />
     </ul>
   );
 }
 
-/** Jauge circulaire de conformité : l'arc se remplit jusqu'au taux de comptes conformes. */
+/** Anneau de conformité : part des comptes conformes, sans animation. */
 function ComplianceGauge({ compliant, total }: { compliant: number; total: number }) {
-  const reduced = useReducedMotion();
   const ratio = total ? compliant / total : 0;
   const r = 30;
   const c = 2 * Math.PI * r;
-  const ok = ratio === 1;
   return (
-    <div className="relative size-[84px] shrink-0" aria-hidden="true">
+    <div className="relative size-20 shrink-0" aria-hidden="true">
       <svg viewBox="0 0 76 76" className="size-full -rotate-90">
-        <defs>
-          <linearGradient id="tp-gauge" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stopColor="var(--tp-brand)" />
-            <stop offset="1" stopColor={ok ? 'var(--tp-brand)' : 'var(--tp-accent)'} />
-          </linearGradient>
-        </defs>
-        <circle cx="38" cy="38" r={r} fill="none" stroke="var(--tp-hover)" strokeWidth="8" />
-        <motion.circle
-          cx="38"
-          cy="38"
-          r={r}
-          fill="none"
-          stroke="url(#tp-gauge)"
-          strokeWidth="8"
-          strokeLinecap="round"
-          strokeDasharray={c}
-          initial={reduced ? false : { strokeDashoffset: c }}
-          animate={{ strokeDashoffset: c * (1 - ratio) }}
-          transition={{ duration: 1, ease: EASE_OUT }}
-        />
+        <circle cx="38" cy="38" r={r} fill="none" stroke="var(--tp-hover)" strokeWidth="7" />
+        <circle cx="38" cy="38" r={r} fill="none" stroke="var(--tp-brand)" strokeWidth="7" strokeDasharray={c} strokeDashoffset={c * (1 - ratio)} />
       </svg>
-      <span className="absolute inset-0 flex items-center justify-center text-[17px] font-extrabold tabular tracking-[-0.02em]">{Math.round(ratio * 100)} %</span>
+      <span className="absolute inset-0 flex items-center justify-center text-base font-semibold tabular">{Math.round(ratio * 100)} %</span>
     </div>
   );
 }
@@ -143,19 +105,18 @@ function Agenda({ items }: { items: AgendaItem[] }) {
     const key = new Date(item.date).toDateString();
     groups.set(key, [...(groups.get(key) ?? []), item]);
   }
-  let index = 0;
   return (
     <div className="-mx-4 -my-4">
       {[...groups.entries()].map(([key, group]) => (
         <section key={key} aria-label={dayLabel(new Date(group[0].date))}>
-          <h3 className="bg-hover px-5 py-1.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-ink-3">{dayLabel(new Date(group[0].date))}</h3>
+          <h3 className="bg-sunken px-5 py-1.5 text-xs font-medium text-ink-2">{dayLabel(new Date(group[0].date))}</h3>
           <ul className="divide-y divide-line">
             {group.map((item) => {
               const kind = KIND[item.kind];
               return (
                 <li key={`${item.kind}-${item.employeeId}-${item.runId ?? ''}`}>
-                  <Reveal index={index++}>
-                    <Link to={`/employes/${item.employeeId}`} state={linkState} className="group flex items-center gap-3 px-5 py-3 transition-colors hover:bg-hover">
+                  <div>
+                    <Link to={`/employes/${item.employeeId}`} state={linkState} className="flex items-center gap-3 px-5 py-3 transition-colors hover:bg-hover">
                       <kind.icon className={cn('size-4 shrink-0', kind.className)} aria-hidden="true" />
                       <span className="w-16 shrink-0 text-xs text-ink-3">
                         {kind.label}
@@ -174,9 +135,9 @@ function Agenda({ items }: { items: AgendaItem[] }) {
                       <span className="hidden sm:contents">
                         {item.kind === 'ARRIVAL' ? <EmployeeStatusBadge status={item.status as EmployeeStatus} /> : <RunStatusBadge status="SCHEDULED" />}
                       </span>
-                      <IconChevronRight className="size-4 text-ink-3 opacity-0 transition-opacity group-hover:opacity-100" aria-hidden="true" />
+                      <IconChevronRight className="size-4 text-ink-3" aria-hidden="true" />
                     </Link>
-                  </Reveal>
+                  </div>
                 </li>
               );
             })}
@@ -196,7 +157,6 @@ export function DashboardPage() {
   return (
     <div className="space-y-5">
       <PageHeader
-        eyebrow={`${greeting()}, ${(me.name ?? me.username).split(' ')[0]}`}
         title="Vue d’ensemble"
         description={`${capitalize(formatDateLong(new Date()))} · mouvements de personnel et état des accès`}
         actions={
@@ -212,7 +172,7 @@ export function DashboardPage() {
 
       {isPending ? (
         <div className="space-y-5">
-          <Skeleton className="h-[74px]" />
+          <Skeleton className="h-[88px]" />
           <div className="grid gap-5 xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
             <Skeleton className="h-80" />
             <Skeleton className="h-80" />
@@ -225,7 +185,7 @@ export function DashboardPage() {
           {data.kpis.needsAttention > 0 ? (
             <Link
               to="/executions?status=FAILED,PARTIAL,TIMED_OUT"
-              className="flex items-center gap-3 glass rounded-[var(--radius-panel)] px-4 py-3 text-sm transition-colors hover:bg-hover"
+              className="flex items-center gap-3 rounded-[var(--radius-panel)] border border-warning/30 bg-warning-soft px-4 py-3 text-sm transition-colors hover:border-warning/50"
             >
               <IconAlert className="size-4 shrink-0 text-warning" aria-hidden="true" />
               <span className="flex-1">
@@ -238,10 +198,15 @@ export function DashboardPage() {
             </Link>
           ) : null}
 
-          <div className="grid gap-5 xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
-            <Panel title="Agenda des mouvements" description="45 prochains jours" id="agenda" icon={<IconCalendar />}>
-              <Agenda items={data.agenda} />
-            </Panel>
+          <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)]">
+            <div className="grid min-w-0 gap-5">
+              <Panel title="Agenda des mouvements" description="45 prochains jours" id="agenda" icon={<IconCalendar />}>
+                <Agenda items={data.agenda} />
+              </Panel>
+              <Panel title="Arrivées et départs" description="Par mois, sur six mois" id="chart" icon={<IconBars />}>
+                <MovementsChart data={data.monthly} />
+              </Panel>
+            </div>
 
             <div className="space-y-5">
               <Panel
@@ -305,9 +270,9 @@ export function DashboardPage() {
                   <EmptyState title="Aucune exécution">Les workflows apparaîtront après la première arrivée.</EmptyState>
                 ) : (
                   <ul className="divide-y divide-line">
-                    {data.recentRuns.map((run, i) => (
+                    {data.recentRuns.map((run) => (
                       <li key={run.id}>
-                        <Reveal index={i}>
+                        <div>
                           <Link to={`/executions/${run.id}`} state={linkState} className="flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-hover">
                             <span className="min-w-0 flex-1">
                               <span className="block truncate text-sm font-medium">
@@ -322,40 +287,34 @@ export function DashboardPage() {
                               <StepSegments total={run.progress.total} done={run.progress.done} failed={run.failedSteps} running={run.status === 'RUNNING'} />
                             </span>
                           </Link>
-                        </Reveal>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </Panel>
+              <Panel title="Fins de contrat" description="Sous 30 jours, sans révocation planifiée" id="contracts" bodyClassName="p-0" icon={<IconClock />}>
+                {data.contractsEnding.length === 0 ? (
+                  <EmptyState title="Rien à planifier">Aucun CDD ni stage ne se termine sans départ planifié.</EmptyState>
+                ) : (
+                  <ul className="divide-y divide-line">
+                    {data.contractsEnding.map((contract) => (
+                      <li key={contract.employeeId} className="flex items-center gap-3 px-4 py-2.5 text-sm">
+                        <span className="min-w-0 flex-1">
+                          <span className="block font-medium">{contract.name}</span>
+                          <span className="block text-xs text-ink-3">
+                            {CONTRACT_LABEL[contract.contractType]} jusqu’au {formatDate(contract.endDate)}
+                          </span>
+                        </span>
+                        <Link to={`/employes/${contract.employeeId}${me.permissions.manageEmployees ? '?depart=1' : ''}`} state={linkState} className="text-[13px] font-medium text-info hover:underline">
+                          {me.permissions.manageEmployees ? 'Planifier' : 'Voir la fiche'}
+                        </Link>
                       </li>
                     ))}
                   </ul>
                 )}
               </Panel>
             </div>
-          </div>
-
-          <div className="grid gap-5 xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
-            <Panel title="Arrivées et départs" description="Par mois, sur six mois" id="chart" icon={<IconBars />}>
-              <MovementsChart data={data.monthly} />
-            </Panel>
-            <Panel title="Fins de contrat" description="Sous 30 jours, sans révocation planifiée" id="contracts" bodyClassName="p-0" icon={<IconClock />}>
-              {data.contractsEnding.length === 0 ? (
-                <EmptyState title="Rien à planifier">Aucun CDD ni stage ne se termine sans départ planifié.</EmptyState>
-              ) : (
-                <ul className="divide-y divide-line">
-                  {data.contractsEnding.map((contract) => (
-                    <li key={contract.employeeId} className="flex items-center gap-3 px-4 py-2.5 text-sm">
-                      <span className="min-w-0 flex-1">
-                        <span className="block font-medium">{contract.name}</span>
-                        <span className="block text-xs text-ink-3">
-                          {CONTRACT_LABEL[contract.contractType]} jusqu’au {formatDate(contract.endDate)}
-                        </span>
-                      </span>
-                      <Link to={`/employes/${contract.employeeId}?depart=1`} state={linkState} className="text-[13px] font-medium text-info hover:underline">
-                        Planifier
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </Panel>
           </div>
         </>
       ) : null}

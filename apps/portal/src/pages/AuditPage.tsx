@@ -1,5 +1,4 @@
 import { IconAutomation, IconChain, IconChevronLeft, IconChevronRight, IconClock, IconClose, IconDownload, IconPerson, IconSearch, IconShieldAlert, IconShieldCheck } from '@/components/icons';
-import { motion, useReducedMotion } from 'motion/react';
 import { Fragment, useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router';
 import { toast } from 'sonner';
@@ -83,7 +82,6 @@ function AuditRow({ log }: { log: AuditLog }) {
 export function AuditPage() {
   useDocumentTitle('Journal d’audit');
   const me = useMe();
-  const reduced = useReducedMotion();
   const [params, setParams] = useSearchParams();
   const search = params.get('q') ?? '';
   const action = params.get('action') ?? '';
@@ -157,12 +155,9 @@ export function AuditPage() {
       />
 
       {report ? (
-        <motion.div
+        <div
           role="status"
           key={report.verifiedAt}
-          initial={reduced ? false : { opacity: 0, y: -4 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.25, ease: [0.2, 0.8, 0.2, 1] }}
           className={cn(
             'mb-5 flex items-start gap-3 rounded-lg border bg-surface px-4 py-3 text-sm',
             report.valid ? 'border-success/30' : 'border-danger/40 bg-danger-soft',
@@ -188,7 +183,7 @@ export function AuditPage() {
               ) : null}
             </p>
           </div>
-        </motion.div>
+        </div>
       ) : null}
       {integrity.error ? <ErrorState error={integrity.error} className="mb-5" /> : null}
 
@@ -236,7 +231,7 @@ export function AuditPage() {
       </div>
 
       {error ? <ErrorState error={error} onRetry={() => void refetch()} className="mb-4" /> : null}
-      <div className={cn('glass overflow-clip rounded-[var(--radius-panel)] transition-opacity', isFetching && !isPending && 'opacity-70')}>
+      <div className={cn('panel overflow-clip rounded-[var(--radius-panel)] transition-opacity', isFetching && !isPending && 'opacity-70')}>
         {isPending ? (
           <div className="space-y-2.5 p-4">
             {Array.from({ length: 8 }, (_, i) => (
@@ -252,7 +247,7 @@ export function AuditPage() {
                   {newDay ? (
                     <li
                       aria-hidden="true"
-                      className={cn('sticky top-[4.5rem] z-[1] border-b border-line bg-raised px-4 py-1.5 text-xs font-semibold capitalize text-ink-2 backdrop-blur-xl', index > 0 && 'border-t')}
+                      className={cn('sticky top-[4.5rem] z-[1] border-b border-line bg-raised px-4 py-1.5 text-xs font-semibold capitalize text-ink-2', index > 0 && 'border-t')}
                     >
                       {formatDateLong(log.occurredAt)}
                     </li>

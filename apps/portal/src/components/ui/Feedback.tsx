@@ -5,7 +5,7 @@ import { cn } from '@/lib/cn';
 import { Button } from './Button';
 
 export function Skeleton({ className }: { className?: string }) {
-  return <div className={cn('skeleton rounded-xl', className)} aria-hidden="true" />;
+  return <div className={cn('skeleton rounded-lg', className)} aria-hidden="true" />;
 }
 
 export function EmptyState({
@@ -24,7 +24,7 @@ export function EmptyState({
   return (
     <div className={cn('flex flex-col items-center justify-center gap-2 px-6 py-12 text-center', className)}>
       {icon ? (
-        <div className="mb-1 flex size-12 items-center justify-center rounded-2xl border border-line bg-surface text-brand shadow-[inset_0_1px_0_var(--tp-glass-edge)] [&_svg]:size-6">
+        <div className="mb-1 flex size-11 items-center justify-center rounded-full bg-sunken text-ink-3 [&_svg]:size-5">
           {icon}
         </div>
       ) : null}
@@ -39,7 +39,7 @@ export function ErrorState({ error, onRetry, className }: { error: unknown; onRe
   return (
     <div
       role="alert"
-      className={cn('flex items-start gap-3 rounded-2xl border border-danger/30 bg-danger-soft px-4 py-3 text-sm backdrop-blur-md', className)}
+      className={cn('flex items-start gap-3 rounded-[var(--radius-panel)] border border-danger/30 bg-danger-soft px-4 py-3 text-sm', className)}
     >
       <IconAlert className="mt-0.5 size-5 shrink-0 text-danger" />
       <div className="min-w-0 flex-1">
@@ -55,7 +55,7 @@ export function ErrorState({ error, onRetry, className }: { error: unknown; onRe
   );
 }
 
-/** Carte en verre dépoli : en-tête facultatif, corps, coins de 18 px. */
+/** Panneau : en-tête facultatif, corps, coins de 12 px. */
 export function Panel({
   title,
   description,
@@ -73,20 +73,20 @@ export function Panel({
   className?: string;
   bodyClassName?: string;
   id?: string;
-  /** Pictogramme posé dans une pastille de verre à gauche du titre. */
+  /** Pictogramme discret à gauche du titre. */
   icon?: ReactNode;
 }) {
   return (
     <section
       id={id}
-      className={cn('glass overflow-hidden rounded-[var(--radius-panel)]', className)}
+      className={cn('panel overflow-hidden rounded-[var(--radius-panel)]', className)}
       aria-labelledby={title && id ? `${id}-title` : undefined}
     >
       {title || actions ? (
         <header className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-5 py-3.5">
           <div className="flex min-w-0 items-center gap-3">
             {icon ? (
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-brand-soft text-brand [&_svg]:size-[18px]" aria-hidden="true">
+              <span className="flex shrink-0 items-center text-ink-3 [&_svg]:size-[18px]" aria-hidden="true">
                 {icon}
               </span>
             ) : null}
@@ -102,7 +102,7 @@ export function Panel({
           {actions ? <div className="flex items-center gap-2">{actions}</div> : null}
         </header>
       ) : null}
-      <div className={cn('p-5', bodyClassName)}>{children}</div>
+      <div className={bodyClassName ?? 'p-5'}>{children}</div>
     </section>
   );
 }
@@ -122,8 +122,8 @@ export function PageHeader({
   return (
     <div className="flex flex-wrap items-end justify-between gap-4 pb-6">
       <div className="min-w-0 space-y-1.5">
-        {eyebrow ? <p className="text-xs font-semibold uppercase tracking-[0.12em] text-brand-strong">{eyebrow}</p> : null}
-        <h1 className="text-[26px] font-bold leading-8 tracking-[-0.025em]">{title}</h1>
+        {eyebrow ? <p className="text-[13px] font-medium text-ink-3">{eyebrow}</p> : null}
+        <h1 className="workspace-title text-[clamp(2.25rem,4vw,3.25rem)] leading-none tracking-[-0.025em]">{title}</h1>
         {description ? <p className="max-w-2xl text-sm text-ink-2">{description}</p> : null}
       </div>
       {actions ? <div className="flex flex-wrap items-center gap-2">{actions}</div> : null}
@@ -133,7 +133,7 @@ export function PageHeader({
 
 export function Kbd({ children }: { children: ReactNode }) {
   return (
-    <kbd className="inline-flex h-5 min-w-5 items-center justify-center rounded-md border border-line-strong bg-surface px-1 font-sans text-[11px] font-semibold text-ink-3 shadow-[inset_0_-1px_0_var(--tp-line)]">
+    <kbd className="inline-flex h-5 min-w-5 items-center justify-center rounded-md border border-line-strong bg-surface px-1 font-sans text-[11px] font-semibold text-ink-3">
       {children}
     </kbd>
   );
@@ -146,9 +146,9 @@ export function Avatar({ first, last, color, size = 'md' }: { first: string; las
   return (
     <span
       aria-hidden="true"
-      className={cn('inline-flex shrink-0 items-center justify-center rounded-[38%] font-bold ring-1 ring-inset', sizes[size])}
+      className={cn('inline-flex shrink-0 items-center justify-center rounded-full font-semibold ring-1 ring-inset', sizes[size])}
       style={{
-        background: `linear-gradient(145deg, color-mix(in oklab, ${tint} 22%, var(--tp-solid)), color-mix(in oklab, ${tint} 8%, var(--tp-solid)))`,
+        background: `color-mix(in oklab, ${tint} 16%, var(--tp-solid))`,
         color: `color-mix(in oklab, ${tint} 50%, var(--tp-ink))`,
         ['--tw-ring-color' as string]: `color-mix(in oklab, ${tint} 30%, transparent)`,
       }}
