@@ -65,7 +65,7 @@ export function LandingPage() {
             <h2 className="section-title" id="architecture-title">Comment circulent les accès&nbsp;?</h2>
             <p className="section-intro">Le portail transmet la demande à n8n. Chaque outil applique les changements et l’API enregistre leur résultat.</p>
           </div>
-          <FlowDiagram enabled={enabled} reduced={reduced} />
+          <FlowDiagram enabled={enabled} />
         </section>
         <section id="securite" className="landing-wrap security-section" aria-labelledby="security-title">
           <h2 className="section-title" id="security-title"><IconShieldCheck className="mb-3 size-8 text-brand" />Contrôle des accès</h2>

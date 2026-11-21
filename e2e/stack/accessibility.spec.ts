@@ -49,8 +49,7 @@ test('accueil (build de production, CSP active) : aucune violation grave', async
   await expect(demo.getByText('Accès ouverts')).toBeVisible();
   await expect(demo.getByText('En cours…')).toBeVisible();
   await expect(demo.getByText('Accès ouverts')).toBeVisible();
-  await demo.getByRole('button', { name: 'Rejouer l’exemple' }).click();
-  await expect(demo.getByText('En cours…')).toBeVisible();
+  await expect(page.getByRole('button', { name: /Rejouer/ })).toHaveCount(0);
   const pause = page.getByRole('button', { name: 'Mettre les animations en pause' });
   await pause.focus();
   await pause.press('Enter');
@@ -67,8 +66,6 @@ test('accueil (build de production, CSP active) : aucune violation grave', async
   await page.locator('.architecture-map').scrollIntoViewIfNeeded();
   const iteration = () => packet.evaluate((path) => Number(path.getAnimations()[0]?.effect?.getComputedTiming().currentIteration ?? 0));
   await expect.poll(iteration, { timeout: 15_000 }).toBeGreaterThan(await iteration());
-  await page.getByRole('button', { name: 'Rejouer le flux' }).click();
-  await expect.poll(iteration).toBe(0);
   await page.setViewportSize({ width: 320, height: 740 });
   const firstStep = page.locator('.flow-list li').first();
   await firstStep.scrollIntoViewIfNeeded();

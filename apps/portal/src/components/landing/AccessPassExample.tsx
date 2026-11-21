@@ -1,6 +1,6 @@
 import { Tabs } from 'radix-ui';
 import { useEffect, useState } from 'react';
-import { IconBranch, IconChat, IconCheck, IconKey, IconRetry } from '@/components/icons';
+import { IconBranch, IconChat, IconCheck, IconKey } from '@/components/icons';
 import { useVisiblePlayback } from '@/hooks/useVisiblePlayback';
 
 const SYSTEMS = [
@@ -23,7 +23,6 @@ interface PlaybackProps {
 function Sequence({ scenario, enabled, reduced }: PlaybackProps & { scenario: (typeof SCENARIOS)[number] }) {
   const { ref, playing } = useVisiblePlayback<HTMLDivElement>(enabled);
   const [completed, setCompleted] = useState(0);
-  const [restart, setRestart] = useState(0);
   const done = reduced ? SYSTEMS.length : completed;
 
   useEffect(() => {
@@ -31,7 +30,7 @@ function Sequence({ scenario, enabled, reduced }: PlaybackProps & { scenario: (t
     const finished = completed === SYSTEMS.length;
     const timer = window.setTimeout(() => setCompleted(finished ? 0 : completed + 1), finished ? 2400 : 850);
     return () => window.clearTimeout(timer);
-  }, [playing, completed, restart]);
+  }, [playing, completed]);
 
   return (
     <div className="demo-grid" ref={ref} data-playing={playing}>
@@ -52,10 +51,6 @@ function Sequence({ scenario, enabled, reduced }: PlaybackProps & { scenario: (t
           <span className="demo-status">{done === SYSTEMS.length ? <><IconCheck />{scenario.state}</> : 'Mise à jour des accès'}</span>
           <span className="demo-meter" aria-hidden="true"><i style={{ transform: `scaleX(${done / SYSTEMS.length})` }} /></span>
           <span className="font-mono tabular">{done}/{SYSTEMS.length}</span>
-          {!reduced && <button type="button" title="Rejouer l’exemple" aria-label="Rejouer l’exemple" disabled={!enabled} onClick={() => {
-            setCompleted(0);
-            setRestart((value) => value + 1);
-          }}><IconRetry /></button>}
         </div>
       </div>
     </div>

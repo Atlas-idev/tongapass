@@ -64,9 +64,6 @@
 .demo-progress { display: flex; align-items: center; gap: .65rem; min-height: 1.75rem; margin-top: .85rem; color: var(--tp-ink-3); font-size: .75rem; }
 .demo-status { display: flex; align-items: center; gap: .3rem; }
 .demo-progress svg { width: .9rem; height: .9rem; }
-.demo-progress button { display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: .45rem; color: var(--tp-brand); }
-.demo-progress button:disabled { opacity: .35; }
-.demo-progress button:hover:enabled { background: var(--tp-brand-soft); }
 .demo-meter { flex: 1; overflow: hidden; height: 3px; border-radius: 4px; background: var(--tp-line); }
 .demo-meter i { display: block; height: 100%; background: var(--tp-brand); transform-origin: left; transition: transform 410ms var(--ease-out); }
 .section-title { font-size: clamp(1.75rem, 3.5vw, 3rem); line-height: 1.1; font-weight: 630; letter-spacing: -.05em; }

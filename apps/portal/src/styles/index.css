@@ -312,9 +312,6 @@
 .flow-packet { display: none; }
 .flow-list li { position: relative; padding-left: 1.2rem; }
 .flow-list li::before { content: ''; position: absolute; left: 0; top: .55em; width: .5rem; height: .5rem; border: 1.5px solid var(--tp-brand); border-radius: 50%; }
-.diagram-replay { display: flex; align-items: center; gap: .4rem; margin-left: auto; border-radius: .5rem; padding: .4rem .6rem; color: var(--tp-brand); font-size: .875rem; font-weight: 600; }
-.diagram-replay:hover { background: var(--tp-brand-soft); }
-.diagram-replay svg { width: 1rem; }
 .timeline-marker { transition: color 180ms, background-color 220ms, border-color 180ms; }
 @media (prefers-reduced-motion: no-preference) {
   .signal-stroke { animation: signal-trace 1.35s ease-out; }

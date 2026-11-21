@@ -1,7 +1,6 @@
-import { useId, useState } from 'react';
+import { useId } from 'react';
 import { useVisiblePlayback } from '@/hooks/useVisiblePlayback';
 import { FLOW_STEPS } from './flow-steps';
-import { IconRetry } from '@/components/icons';
 import { IconAutomation, IconBranch, IconChat, IconKey, IconLayers, IconLedger, IconMail, IconPeople, type IconComponent } from '@/components/icons';
 
 interface Node {
@@ -42,10 +41,9 @@ const EDGES = [
  * Le portail appelle l'API, qui déclenche n8n ; n8n agit sur
  * chaque outil et renvoie des rappels signés (en pointillés) vers l'API.
  */
-export function FlowDiagram({ enabled, reduced }: { enabled: boolean; reduced: boolean }) {
+export function FlowDiagram({ enabled }: { enabled: boolean }) {
   const uid = useId().replace(/:/g, '');
   const { ref, playing } = useVisiblePlayback<HTMLDivElement>(enabled);
-  const [playback, setPlayback] = useState(0);
   return (
     <div ref={ref} className="architecture-flow" data-playing={playing}>
       <div className="architecture-map panel mt-6 hidden rounded-2xl p-6 lg:block">
@@ -58,7 +56,7 @@ export function FlowDiagram({ enabled, reduced }: { enabled: boolean; reduced: b
           {EDGES.map((edge) => (
             <g key={edge.id}>
               <path d={edge.d} fill="none" stroke={'back' in edge ? 'var(--tp-accent)' : 'var(--tp-ink-3)'} strokeWidth="1.4" strokeDasharray={'back' in edge ? '5 4' : undefined} />
-              <path key={playback} className="flow-packet" data-edge={edge.id} d={edge.d} fill="none" pathLength="1" stroke="var(--tp-brand)" strokeLinecap="round" strokeWidth="3" strokeDasharray=".09 1.1" aria-hidden="true" />
+              <path className="flow-packet" data-edge={edge.id} d={edge.d} fill="none" pathLength="1" stroke="var(--tp-brand)" strokeLinecap="round" strokeWidth="3" strokeDasharray=".09 1.1" aria-hidden="true" />
               {'label' in edge ? (
                 <text x={edge.lx} y={edge.ly} textAnchor="middle" className="fill-ink-3 text-[11px]">
                   {edge.label}
@@ -90,10 +88,9 @@ export function FlowDiagram({ enabled, reduced }: { enabled: boolean; reduced: b
           ))}
         </svg>
       </div>
-      <ol key={playback} className="flow-list mt-5 space-y-3 text-ink-2 lg:hidden">
+      <ol className="flow-list mt-5 space-y-3 text-ink-2 lg:hidden">
         {FLOW_STEPS.map((step) => <li key={step.title}><strong className="text-ink">{step.title}.</strong> {step.text}</li>)}
       </ol>
-      {!reduced && <button className="diagram-replay" disabled={!enabled} type="button" onClick={() => setPlayback((previous) => previous + 1)}><IconRetry aria-hidden="true" />Rejouer le flux</button>}
     </div>
   );
 }
