@@ -28,11 +28,11 @@ Le tableau de bord regroupe la date, l’action de déclaration et le dernier é
 
 | Surface | Déclenchement |
 |---|---|
-| Exemple public | La séquence démarre lorsque l’exemple apparaît à l’écran et s’arrête une fois les trois systèmes traités. On peut changer de scénario ou le rejouer. |
-| Architecture | Un passage montre la demande, la distribution vers les outils puis le rappel vers l’API. Le bouton permet de revoir le trajet. |
+| Exemple public | Le scénario sélectionné se répète à l’écran. Le résultat reste affiché 2,4 secondes avant le prochain passage. |
+| Architecture | Sur ordinateur, le signal parcourt les liaisons toutes les cinq secondes. Sur téléphone, les quatre étapes s’éclairent dans le même ordre. |
 | Barre supérieure et tableau de bord | Le signal et le fil d’activité réagissent aux événements reçus du serveur. Une coupure affiche l’état de reconnexion. |
 | Fiche d’exécution | Une étape en cours est repérée sur la frise. Les marqueurs et la progression changent avec son statut. |
 
-Avec `prefers-reduced-motion`, les résultats de l’exemple sont immédiatement lisibles. Le portail continue d’afficher les nouveaux événements et les statuts.
+L’accueil suspend ses boucles lorsque la section sort du champ ou que l’onglet est masqué. La commande de pause se trouve en haut de page. Avec `prefers-reduced-motion`, les résultats de l’exemple sont immédiatement lisibles. Le portail continue d’afficher les nouveaux événements et les statuts.
 
 [Logo](logo.svg) · [Bannière](banner.svg) · [Styles du portail](../../apps/portal/src/styles/index.css)

@@ -1,10 +1,12 @@
+import { useState } from 'react';
 import { useAuth } from '@/auth/AuthProvider';
 import { LogoMark, Wordmark } from '@/components/brand/Logo';
-import { IconKey, IconLock, IconMoon, IconSun, IconFlow, IconShieldCheck } from '@/components/icons';
+import { IconKey, IconLock, IconMoon, IconSun, IconFlow, IconShieldCheck, IconPause, IconPlay } from '@/components/icons';
 import { AccessPassExample } from '@/components/landing/AccessPassExample';
 import { FlowDiagram } from '@/components/landing/FlowDiagram';
-import { FLOW_STEPS } from '@/components/landing/flow-steps';
 import { Button, IconButton } from '@/components/ui/Button';
+import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
+import { useVisiblePlayback } from '@/hooks/useVisiblePlayback';
 import { useTheme } from '@/hooks/useTheme';
 
 const SAFEGUARDS = [
@@ -16,6 +18,10 @@ const SAFEGUARDS = [
 export function LandingPage() {
   const { login } = useAuth();
   const { resolved, toggle } = useTheme();
+  const reduced = usePrefersReducedMotion();
+  const [paused, setPaused] = useState(false);
+  const enabled = !reduced && !paused;
+  const { ref: heroRef, playing: heroPlaying } = useVisiblePlayback<HTMLElement>(enabled);
   const enter = () => void login(window.location.pathname + window.location.search);
 
   return (
@@ -28,6 +34,9 @@ export function LandingPage() {
             <a href="#cycle">Parcours RH</a><a href="#architecture">Architecture</a><a href="#securite">Sécurité</a>
           </nav>
           <div className="ml-auto flex items-center gap-2 md:ml-6">
+            {!reduced && <IconButton label={paused ? 'Reprendre les animations' : 'Mettre les animations en pause'} onClick={() => setPaused(!paused)}>
+              {paused ? <IconPlay className="size-[18px]" /> : <IconPause className="size-[18px]" />}
+            </IconButton>}
             <IconButton label={resolved === 'dark' ? 'Passer en thème clair' : 'Passer en thème sombre'} onClick={toggle}>
               {resolved === 'dark' ? <IconSun className="size-5" /> : <IconMoon className="size-5" />}
             </IconButton>
@@ -36,7 +45,7 @@ export function LandingPage() {
         </div>
       </header>
       <main id="main" tabIndex={-1} className="outline-none">
-        <section className="landing-hero" aria-labelledby="hero-title">
+        <section ref={heroRef} className="landing-hero" data-playing={heroPlaying} aria-labelledby="hero-title">
           <div className="hero-image" aria-hidden="true" />
           <div className="landing-wrap hero-inner"><div className="hero-copy">
             <p className="hero-kicker"><IconKey aria-hidden="true" /> Gestion des identités</p>
@@ -49,17 +58,14 @@ export function LandingPage() {
           </div></div>
         </section>
         <div className="landing-wrap demo-wrap">
-          <AccessPassExample />
+          <AccessPassExample enabled={enabled} reduced={reduced} />
         </div>
         <section id="architecture" className="landing-wrap landing-section" aria-labelledby="architecture-title">
           <div className="architecture-intro">
             <h2 className="section-title" id="architecture-title">Comment circulent les accès&nbsp;?</h2>
             <p className="section-intro">Le portail transmet la demande à n8n. Chaque outil applique les changements et l’API enregistre leur résultat.</p>
           </div>
-          <div className="architecture-map panel mt-6 hidden rounded-2xl p-6 lg:block"><FlowDiagram /></div>
-          <ol className="mt-5 list-decimal space-y-3 pl-6 text-ink-2 lg:hidden">
-            {FLOW_STEPS.map((step) => <li key={step.title}><strong className="text-ink">{step.title}.</strong> {step.text}</li>)}
-          </ol>
+          <FlowDiagram enabled={enabled} reduced={reduced} />
         </section>
         <section id="securite" className="landing-wrap security-section" aria-labelledby="security-title">
           <h2 className="section-title" id="security-title"><IconShieldCheck className="mb-3 size-8 text-brand" />Contrôle des accès</h2>

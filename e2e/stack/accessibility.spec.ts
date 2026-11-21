@@ -36,6 +36,7 @@ const axe = (page: Page) =>
   new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).exclude('[data-sonner-toaster]');
 
 test('accueil (build de production, CSP active) : aucune violation grave', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
   await page.evaluate(() => document.fonts.ready);
@@ -46,9 +47,35 @@ test('accueil (build de production, CSP active) : aucune violation grave', async
   const demo = page.getByRole('figure', { name: 'Exemple de fiche d’accès' });
   await demo.scrollIntoViewIfNeeded();
   await expect(demo.getByText('Accès ouverts')).toBeVisible();
-  await demo.getByRole('button', { name: 'Rejouer l’exemple' }).click();
   await expect(demo.getByText('En cours…')).toBeVisible();
   await expect(demo.getByText('Accès ouverts')).toBeVisible();
+  await demo.getByRole('button', { name: 'Rejouer l’exemple' }).click();
+  await expect(demo.getByText('En cours…')).toBeVisible();
+  const pause = page.getByRole('button', { name: 'Mettre les animations en pause' });
+  await pause.focus();
+  await pause.press('Enter');
+  await expect(page.locator('.hero-image')).toHaveCSS('animation-play-state', 'paused');
+  await demo.getByRole('tab', { name: 'Départ' }).click();
+  const counter = demo.getByText('0/3', { exact: true });
+  await expect(counter).toBeVisible();
+  await page.waitForTimeout(1200);
+  await expect(counter).toBeVisible();
+  await page.getByRole('button', { name: 'Reprendre les animations' }).click();
+  await demo.scrollIntoViewIfNeeded();
+  await expect(demo.getByText('Accès révoqués')).toBeVisible();
+  const packet = page.locator('.flow-packet[data-edge="rh-api"]');
+  await page.locator('.architecture-map').scrollIntoViewIfNeeded();
+  const iteration = () => packet.evaluate((path) => Number(path.getAnimations()[0]?.effect?.getComputedTiming().currentIteration ?? 0));
+  await expect.poll(iteration, { timeout: 15_000 }).toBeGreaterThan(await iteration());
+  await page.getByRole('button', { name: 'Rejouer le flux' }).click();
+  await expect.poll(iteration).toBe(0);
+  await page.setViewportSize({ width: 320, height: 740 });
+  const firstStep = page.locator('.flow-list li').first();
+  await firstStep.scrollIntoViewIfNeeded();
+  await expect.poll(() => firstStep.evaluate((step) => getComputedStyle(step, '::before').animationPlayState)).toBe('running');
+  await page.getByRole('heading', { level: 1 }).scrollIntoViewIfNeeded();
+  await expect.poll(() => firstStep.evaluate((step) => getComputedStyle(step, '::before').animationPlayState)).toBe('paused');
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
 });
 
 test('fiche mobile au clavier et connexion depuis un lien vers une arrivée', async ({ page }) => {

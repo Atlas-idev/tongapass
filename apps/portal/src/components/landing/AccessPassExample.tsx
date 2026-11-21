@@ -1,7 +1,7 @@
 import { Tabs } from 'radix-ui';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { IconBranch, IconChat, IconCheck, IconKey, IconRetry } from '@/components/icons';
-import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
+import { useVisiblePlayback } from '@/hooks/useVisiblePlayback';
 
 const SYSTEMS = [
   { name: 'Keycloak', icon: IconKey },
@@ -15,29 +15,26 @@ const SCENARIOS = [
   { phase: 'Départ', profile: 'Ingénierie DevOps', state: 'Accès révoqués', systems: ['Sessions révoquées', 'Compte bloqué', 'Compte désactivé'] },
 ] as const;
 
-function Sequence({ scenario }: { scenario: (typeof SCENARIOS)[number] }) {
-  const reduced = usePrefersReducedMotion();
-  const container = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
+interface PlaybackProps {
+  enabled: boolean;
+  reduced: boolean;
+}
+
+function Sequence({ scenario, enabled, reduced }: PlaybackProps & { scenario: (typeof SCENARIOS)[number] }) {
+  const { ref, playing } = useVisiblePlayback<HTMLDivElement>(enabled);
   const [completed, setCompleted] = useState(0);
+  const [restart, setRestart] = useState(0);
   const done = reduced ? SYSTEMS.length : completed;
 
   useEffect(() => {
-    const node = container.current;
-    if (!node) return;
-    const observer = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting), { threshold: 0.25 });
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!visible || reduced || completed === SYSTEMS.length) return;
-    const timer = window.setTimeout(() => setCompleted(completed + 1), 730);
+    if (!playing) return;
+    const finished = completed === SYSTEMS.length;
+    const timer = window.setTimeout(() => setCompleted(finished ? 0 : completed + 1), finished ? 2400 : 850);
     return () => window.clearTimeout(timer);
-  }, [visible, reduced, completed]);
+  }, [playing, completed, restart]);
 
   return (
-    <div className="demo-grid" ref={container}>
+    <div className="demo-grid" ref={ref} data-playing={playing}>
       <div className="demo-person">
         <span className="demo-avatar" aria-hidden="true">HR</span>
         <div><strong>Hanitra Rakoto</strong><p>{scenario.profile}</p></div>
@@ -52,17 +49,20 @@ function Sequence({ scenario }: { scenario: (typeof SCENARIOS)[number] }) {
           ))}
         </ol>
         <div className="demo-progress">
-          <span role="status">{done === SYSTEMS.length ? <><IconCheck />{scenario.state}</> : 'Mise à jour des accès'}</span>
+          <span className="demo-status">{done === SYSTEMS.length ? <><IconCheck />{scenario.state}</> : 'Mise à jour des accès'}</span>
           <span className="demo-meter" aria-hidden="true"><i style={{ transform: `scaleX(${done / SYSTEMS.length})` }} /></span>
           <span className="font-mono tabular">{done}/{SYSTEMS.length}</span>
-          {!reduced && <button type="button" title="Rejouer l’exemple" aria-label="Rejouer l’exemple" onClick={() => setCompleted(0)} disabled={done !== SYSTEMS.length}><IconRetry /></button>}
+          {!reduced && <button type="button" title="Rejouer l’exemple" aria-label="Rejouer l’exemple" disabled={!enabled} onClick={() => {
+            setCompleted(0);
+            setRestart((value) => value + 1);
+          }}><IconRetry /></button>}
         </div>
       </div>
     </div>
   );
 }
 
-export function AccessPassExample() {
+export function AccessPassExample({ enabled, reduced }: PlaybackProps) {
   return (
     <figure className="flow-demo" id="cycle" aria-label="Exemple de fiche d’accès">
       <Tabs.Root defaultValue="Arrivée">
@@ -73,7 +73,7 @@ export function AccessPassExample() {
           </Tabs.List>
         </div>
         {SCENARIOS.map((scenario) => (
-          <Tabs.Content key={scenario.phase} value={scenario.phase}><Sequence scenario={scenario} /></Tabs.Content>
+          <Tabs.Content key={scenario.phase} value={scenario.phase}><Sequence scenario={scenario} enabled={enabled} reduced={reduced} /></Tabs.Content>
         ))}
       </Tabs.Root>
     </figure>

@@ -2,7 +2,7 @@
 
 ## En cours
 
-- Accueil bleu nuit et lagon, démonstration animée des trois parcours RH et schéma d’architecture rejouable. Le tableau de bord et la barre supérieure réagissent aux événements du serveur.
+- Accueil bleu nuit et lagon. Le parcours RH sélectionné et le schéma d’architecture tournent en boucle à l’écran, avec une commande de pause commune. Le tableau de bord et la barre supérieure réagissent aux événements du serveur.
 
 ### Refonte précédente
 

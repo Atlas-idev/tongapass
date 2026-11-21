@@ -62,7 +62,7 @@
 .system-copy strong { font-size: .875rem; }
 .system-copy small { font-size: .75rem; line-height: 1.5; color: var(--tp-ink-3); }
 .demo-progress { display: flex; align-items: center; gap: .65rem; min-height: 1.75rem; margin-top: .85rem; color: var(--tp-ink-3); font-size: .75rem; }
-.demo-progress [role='status'] { display: flex; align-items: center; gap: .3rem; }
+.demo-status { display: flex; align-items: center; gap: .3rem; }
 .demo-progress svg { width: .9rem; height: .9rem; }
 .demo-progress button { display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: .45rem; color: var(--tp-brand); }
 .demo-progress button:disabled { opacity: .35; }
@@ -108,8 +108,14 @@
 }
 @media (prefers-reduced-motion: no-preference) {
   html:has(.landing) { scroll-behavior: smooth; }
-  .hero-image { animation: threshold-reveal 2s cubic-bezier(.2,.7,.3,1) both; }
-  @keyframes threshold-reveal { from { transform: scale(1.045); } }
+  .hero-image { animation: threshold-drift 12s ease-in-out infinite alternate; }
+  @keyframes threshold-drift { from { transform: scale(1); } to { transform: scale(1.035); } }
   [data-stage='running'] .system-icon { animation: receive-ring 730ms ease-out infinite; }
   [data-stage='done'] .system-copy small { animation: content-in 240ms var(--ease-out); }
+  .landing-hero[data-playing='false'] .hero-image,
+  .demo-grid[data-playing='false'] .system-icon,
+  .demo-grid[data-playing='false'] .system-copy small { animation-play-state: paused; }
+}
+@media (max-width: 22rem) {
+  .landing-header .landing-wrap > a > :last-child { display: none; }
 }

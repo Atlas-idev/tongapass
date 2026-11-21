@@ -310,6 +310,8 @@
 .metric-icon { width: 1.15rem; height: 1.15rem; color: var(--tp-brand); }
 .metric-value { font-size: 1.95rem; letter-spacing: -.055em; font-weight: 650; line-height: 1.3; }
 .flow-packet { display: none; }
+.flow-list li { position: relative; padding-left: 1.2rem; }
+.flow-list li::before { content: ''; position: absolute; left: 0; top: .55em; width: .5rem; height: .5rem; border: 1.5px solid var(--tp-brand); border-radius: 50%; }
 .diagram-replay { display: flex; align-items: center; gap: .4rem; margin-left: auto; border-radius: .5rem; padding: .4rem .6rem; color: var(--tp-brand); font-size: .875rem; font-weight: 600; }
 .diagram-replay:hover { background: var(--tp-brand-soft); }
 .diagram-replay svg { width: 1rem; }
@@ -326,11 +328,20 @@
   [data-step-state='SUCCEEDED'] .timeline-marker svg { animation: check-in 260ms var(--ease-out); }
   @keyframes check-in { from { transform: scale(.65); } }
   @keyframes receive-ring { from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--tp-brand) 42%, transparent); } to { box-shadow: 0 0 0 6px transparent; } }
-  .flow-packet { display: inline; opacity: 0; animation: packet-travel .8s linear; }
-  .flow-packet[data-edge='api-n8n'], .flow-packet[data-edge='api-db'] { animation-delay: .7s; }
-  .flow-packet[data-edge^='n8n-'] { animation-delay: 1.4s; }
-  .flow-packet[data-edge='n8n-api'] { animation-delay: 2.2s; }
-  @keyframes packet-travel { 0% { opacity: 1; stroke-dashoffset: .09; } 95% { opacity: 1; } 100% { opacity: 0; stroke-dashoffset: -1.1; } }
+  .flow-packet { display: inline; opacity: 0; animation: packet-travel 5s linear infinite; }
+  .flow-packet[data-edge='api-n8n'], .flow-list li:nth-child(2)::before { animation-delay: .85s; }
+  .flow-packet[data-edge^='n8n-'], .flow-list li:nth-child(3)::before { animation-delay: 1.7s; }
+  .flow-packet[data-edge='n8n-api'], .flow-list li:nth-child(4)::before { animation-delay: 2.55s; }
+  .flow-packet[data-edge='api-db'] { animation-delay: 3.4s; }
+  @keyframes packet-travel {
+    0% { opacity: 0; stroke-dashoffset: .09; }
+    1%, 15% { opacity: 1; }
+    17%, 100% { opacity: 0; stroke-dashoffset: -1.1; }
+  }
+  .flow-list li::before { animation: flow-stop 5s ease-out infinite; }
+  @keyframes flow-stop { 0%, 17% { background: var(--tp-brand); } 22%, 100% { background: transparent; } }
+  .architecture-flow[data-playing='false'] .flow-packet,
+  .architecture-flow[data-playing='false'] .flow-list li::before { animation-play-state: paused; }
 }
 
 @keyframes dialog-out {

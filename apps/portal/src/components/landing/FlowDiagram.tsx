@@ -1,5 +1,6 @@
-import { useEffect, useId, useRef, useState } from 'react';
-import { usePrefersReducedMotion } from '@/hooks/usePrefersReducedMotion';
+import { useId, useState } from 'react';
+import { useVisiblePlayback } from '@/hooks/useVisiblePlayback';
+import { FLOW_STEPS } from './flow-steps';
 import { IconRetry } from '@/components/icons';
 import { IconAutomation, IconBranch, IconChat, IconKey, IconLayers, IconLedger, IconMail, IconPeople, type IconComponent } from '@/components/icons';
 
@@ -41,66 +42,58 @@ const EDGES = [
  * Le portail appelle l'API, qui déclenche n8n ; n8n agit sur
  * chaque outil et renvoie des rappels signés (en pointillés) vers l'API.
  */
-export function FlowDiagram() {
+export function FlowDiagram({ enabled, reduced }: { enabled: boolean; reduced: boolean }) {
   const uid = useId().replace(/:/g, '');
-  const diagram = useRef<SVGSVGElement>(null);
+  const { ref, playing } = useVisiblePlayback<HTMLDivElement>(enabled);
   const [playback, setPlayback] = useState(0);
-  const reduced = usePrefersReducedMotion();
-  useEffect(() => {
-    const node = diagram.current;
-    if (!node || reduced) return;
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) {
-        setPlayback((previous) => previous + 1);
-        observer.disconnect();
-      }
-    });
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [reduced]);
   return (
-    <>
-    <svg ref={diagram} viewBox="0 0 1000 372" className="h-auto w-full" role="img" aria-labelledby={`${uid}-title`}>
-      <title id={`${uid}-title`}>
-        Architecture : le portail RH appelle l’API TongaPass, qui déclenche n8n ; n8n crée ou révoque les accès dans Keycloak, Gitea,
-        Mattermost et par e-mail, puis renvoie à l’API des rappels signés. L’API journalise tout dans PostgreSQL.
-      </title>
+    <div ref={ref} className="architecture-flow" data-playing={playing}>
+      <div className="architecture-map panel mt-6 hidden rounded-2xl p-6 lg:block">
+        <svg viewBox="0 0 1000 372" className="h-auto w-full" role="img" aria-labelledby={`${uid}-title`}>
+          <title id={`${uid}-title`}>
+            Architecture : le portail RH appelle l’API TongaPass, qui déclenche n8n ; n8n crée ou révoque les accès dans Keycloak, Gitea,
+            Mattermost et par e-mail, puis renvoie à l’API des rappels signés. L’API journalise tout dans PostgreSQL.
+          </title>
 
-      {EDGES.map((edge) => (
-        <g key={edge.id}>
-          <path d={edge.d} fill="none" stroke={'back' in edge ? 'var(--tp-accent)' : 'var(--tp-ink-3)'} strokeWidth="1.4" strokeDasharray={'back' in edge ? '5 4' : undefined} />
-          {playback > 0 && !reduced && <path key={playback} className="flow-packet" data-edge={edge.id} d={edge.d} fill="none" pathLength="1" stroke="var(--tp-brand)" strokeLinecap="round" strokeWidth="3" strokeDasharray=".09 1.1" aria-hidden="true" />}
-          {'label' in edge ? (
-            <text x={edge.lx} y={edge.ly} textAnchor="middle" className="fill-ink-3 text-[11px]">
-              {edge.label}
-            </text>
-          ) : null}
-        </g>
-      ))}
+          {EDGES.map((edge) => (
+            <g key={edge.id}>
+              <path d={edge.d} fill="none" stroke={'back' in edge ? 'var(--tp-accent)' : 'var(--tp-ink-3)'} strokeWidth="1.4" strokeDasharray={'back' in edge ? '5 4' : undefined} />
+              <path key={playback} className="flow-packet" data-edge={edge.id} d={edge.d} fill="none" pathLength="1" stroke="var(--tp-brand)" strokeLinecap="round" strokeWidth="3" strokeDasharray=".09 1.1" aria-hidden="true" />
+              {'label' in edge ? (
+                <text x={edge.lx} y={edge.ly} textAnchor="middle" className="fill-ink-3 text-[11px]">
+                  {edge.label}
+                </text>
+              ) : null}
+            </g>
+          ))}
 
-      {Object.entries(NODES).map(([key, node]) => (
-        <g key={key}>
-          <rect
-            x={node.x}
-            y={node.y}
-            width={node.w}
-            height={node.h}
-            rx="8"
-            fill={node.accent ? 'var(--tp-sunken)' : 'var(--tp-surface)'}
-            stroke={node.accent ? 'var(--tp-brand)' : 'var(--tp-line-strong)'}
-            strokeWidth="1.2"
-          />
-          <node.icon x={node.x + 16} y={node.y + node.h / 2 - 10} width="20" height="20" className="text-ink-3" />
-          <text x={node.x + 48} y={node.y + node.h / 2 - 3} className="fill-ink text-[15px] font-semibold">
-            {node.title}
-          </text>
-          <text x={node.x + 48} y={node.y + node.h / 2 + 15} className="fill-ink-3 text-[11.5px]">
-            {node.sub}
-          </text>
-        </g>
-      ))}
-    </svg>
-    {!reduced && <button className="diagram-replay" type="button" onClick={() => setPlayback((previous) => previous + 1)}><IconRetry aria-hidden="true" />Rejouer le flux</button>}
-    </>
+          {Object.entries(NODES).map(([key, node]) => (
+            <g key={key}>
+              <rect
+                x={node.x}
+                y={node.y}
+                width={node.w}
+                height={node.h}
+                rx="8"
+                fill={node.accent ? 'var(--tp-sunken)' : 'var(--tp-surface)'}
+                stroke={node.accent ? 'var(--tp-brand)' : 'var(--tp-line-strong)'}
+                strokeWidth="1.2"
+              />
+              <node.icon x={node.x + 16} y={node.y + node.h / 2 - 10} width="20" height="20" className="text-ink-3" />
+              <text x={node.x + 48} y={node.y + node.h / 2 - 3} className="fill-ink text-[15px] font-semibold">
+                {node.title}
+              </text>
+              <text x={node.x + 48} y={node.y + node.h / 2 + 15} className="fill-ink-3 text-[11.5px]">
+                {node.sub}
+              </text>
+            </g>
+          ))}
+        </svg>
+      </div>
+      <ol key={playback} className="flow-list mt-5 space-y-3 text-ink-2 lg:hidden">
+        {FLOW_STEPS.map((step) => <li key={step.title}><strong className="text-ink">{step.title}.</strong> {step.text}</li>)}
+      </ol>
+      {!reduced && <button className="diagram-replay" disabled={!enabled} type="button" onClick={() => setPlayback((previous) => previous + 1)}><IconRetry aria-hidden="true" />Rejouer le flux</button>}
+    </div>
   );
 }

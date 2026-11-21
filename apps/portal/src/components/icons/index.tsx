@@ -43,6 +43,9 @@ function icon(name: string, body: ReactNode): IconComponent {
 
 /* ------------------------------------------------------------ Navigation */
 
+export const IconPause = icon('IconPause', <path d="M8 5v14m8-14v14" strokeWidth="3" />);
+export const IconPlay = icon('IconPlay', <path d="m7.5 4.5 12 7.5-12 7.5z" />);
+
 /** Vue d'ensemble : tableau de bord en quatre tuiles de tailles différentes. */
 export const IconOverview = icon(
   'IconOverview',
