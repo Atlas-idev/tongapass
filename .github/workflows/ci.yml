@@ -166,7 +166,7 @@ jobs:
         run: npm audit --omit=dev --audit-level=high
         working-directory: apps/portal
       - name: Trivy — vulnérabilités, secrets et mauvaises configurations (Dockerfile, Compose)
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           scan-type: fs
           scanners: vuln,secret,misconfig
@@ -194,7 +194,7 @@ jobs:
           cache-from: type=gha,scope=${{ matrix.app }}
           cache-to: type=gha,mode=max,scope=${{ matrix.app }}
       - name: Trivy — scan de l'image
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: tongapass/${{ matrix.app }}:ci
           severity: CRITICAL,HIGH
